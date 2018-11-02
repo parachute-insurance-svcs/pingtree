@@ -1,7 +1,7 @@
 # TODO: include mapping CSVs
 openapi: '3.0.2'
 info:
-  title: Open Lead Specification
+  title: Open PingTree Specification
   version: 'v1.0'
   description: >
     ## Overview
@@ -41,9 +41,10 @@ info:
       * `00001` - No bids will be returned on the 'ping'
       * `00002` - Winners will reject the lead on 'post'
       * otherwise - The lead will be accepted on 'ping' and 'post'
-  contact:
-    name: Integration Support
-    email: integrations@policyfuel.com
+  # TODO: setup contact email
+  # contact:
+    # name: Integration Support
+    # email: integrations@policyfuel.com
 servers:
   - url: https://test.gateway.policyfuel.com/
     description: Testing server with simulated responses
@@ -70,7 +71,7 @@ paths:
                 vertical:
                   $ref: '#/components/schemas/Vertical'
                 lead:
-                  $ref: '#/components/schemas/AutoLead'
+                  $ref: '#/components/schemas/AutoLeadPartial'
               required:
                 - vertical
                 - lead
@@ -197,7 +198,7 @@ paths:
                 vertical:
                   $ref: '#/components/schemas/Vertical'
                 lead:
-                  $ref: '#/components/schemas/AutoLeadWithPII'
+                  $ref: '#/components/schemas/AutoLeadComplete'
               required:
                 - vertical
                 - lead
@@ -279,28 +280,14 @@ paths:
           $ref: '#/components/responses/ServerError'
 components:
   schemas:
-    AutoLead:
+    AutoLeadPartial:
       type: object
       description: >
-        An auto lead consists of several required sub-objects containing all of
-        the data available for a lead.
+        An auto lead is composed of several sub-objects containing all of
+        the data available for a lead. In the ping phase, all PII is omitted.
       properties:
         seller:
-          type: object
-          properties:
-            sub_source:
-              type: string
-              description: The marketing source that the lead originated from
-            exclusive:
-              type: boolean
-              description: Wether the lead is exclusive (true) or shared (false)
-              example: false
-            campaign:
-              type: string
-              description: Seller-specified campaign name
-          required:
-            - exclusive
-            - sub_source
+          '#/components/schemas/Seller'
         vehicles:
           type: array
           minItems: 1
@@ -314,171 +301,25 @@ components:
           items:
             $ref: '#/components/schemas/Driver'
         coverage:
-          type: object
-          properties:
-            current:
-              type: boolean
-              description: >
-                Whether the applicant is currently insured (true) or not (false).
-                When `current` is true, all other fields in the `coverage` object
-                are **required**, otherwise they are optional.
-              example: true
-            insurer:
-              $ref: '#/components/schemas/Carrier'
-            duration:
-              type: integer
-              description: >
-                Number of **months** with `insurer` (or blank if not currently
-                insured)
-              minimum: 1
-            expiration:
-              type: string
-              description: Year and month in which the current policy expires
-              pattern: '^\d{4}-\d{2}$'
-              example: '2020-01'
-            current_level:
-              type: string
-              enum:
-                - 15/25
-                - 25/50
-                - 50/100
-                - 100/300
-                - 250/500
-            requested_level:
-              type: string
-              enum:
-                - 15/25
-                - 25/50
-                - 50/100
-                - 100/300
-                - 250/500
-          required:
-            - current
+          $ref: '#/components/schemas/AutoCoverage'
         accidents:
           type: array
           items:
-            allOf:
-              - $ref: '#/components/schemas/AutoIncident'
-              - type: object
-                description: A specific type of AutoIncident representing an auto accident
-                properties:
-                  type:
-                    type: string
-                    enum:
-                      - vehicle-hit-vehicle
-                      - at-fault-accident-not-listed
-                      - chargeable-accident-injury
-                      - chargeable-accident-no-injury
-                      - non-fault-accident-not-listed
-                      - vehicle-hit-person
-                      - hit-and-run-resulting-in-bodily-injury
-                      - non-chargeable-accident
-                      - other-vehicle-hit-yours
-                      - vehicle-hit-property
-                      - reckless-driving-resulting-in-an-accident
-                      - hit-and-run-no-bi
-                      - vehicle-damaged-avoiding-accident
-                  damage_type:
-                    type: string
-                    enum:
-                      - not-applicable
-                      - people
-                      - property
-                      - both
-                  damage_total:
-                    type: integer
-                    minimum: 0
-                  at_fault:
-                    type: boolean
-                required:
-                  - type
-                  - damage_type
-                  - damage_total
-                  - at_fault
+            $ref: '#/components/schemas/AutoAccident'
         claims:
           type: array
           items:
-            allOf:
-              - $ref: '#/components/schemas/AutoIncident'
-              - type: object
-                description: A specific type of AutoIncident representing an auto claim
-                properties:
-                  type:
-                    type: string
-                    enum: [ vehicle-hit-animal, car-fire, flood-damage, hail-damage, loss-claim-not-listed, theft-of-stereo, vehicle-stolen, towing-service, vandalism-damage, windshield-damage ]
-                  damage_type:
-                    type: string
-                    enum:
-                      - not-applicable
-                      - people
-                      - property
-                      - both
-                  damage_total:
-                    type: integer
-                    minimum: 0
-                  at_fault:
-                    type: boolean
-                required:
-                  - type
-                  - damage_type
-                  - damage_total
-                  - at_fault
+            $ref: '#/components/schemas/AutoClaim'
         tickets:
           type: array
           items:
-            allOf:
-              - $ref: '#/components/schemas/AutoIncident'
-              - type: object
-                description: A specific type of AutoIncident representing a ticket
-                properties:
-                  type:
-                    type: string
-                    enum: [ child-seat-violation, driving-with-suspendedrevoked-license, other-unlisted-major-violation, carpool-lane-violation, defective-vehicle-reduced-violation, defective-equipment, expired-emmissions, expired-license, expired-registration, driving-too-fast-for-conditions, following-too-close, failure-to-stop-at-red-light, failure-to-stop-at-a-stop-sign, failure-to-stop, failure-to-stop-for-a-school-bus, no-helmet, inattentive-driving, illegal-lane-change, seat-belt-violation, driving-without-insurance, other-yielding, excessive-noise, passing-in-a-no-passing-zone, failure-to-signal, illegal-passing, speeding-contestroad-racing, reckless-driving, illegal-turn-on-red, passing-on-shoulder, speeding-violation, speed-more-than-10-mph-over, speeding-over-100, speed-more-than-20-mph-over, speed-under-10-mph, failure-to-obey-traffic-signal, turning-violation, unlicensed-driver, illegal-u-turn, ticket-violation-not-listed, suspension, wrong-way-on-a-one-way ]
-                required:
-                  - type
+            $ref: '#/components/schemas/AutoTicket'
         duis:
           type: array
           items:
-            allOf:
-              - $ref: '#/components/schemas/AutoIncident'
-              - type: object
-                description: A specific type of AutoIncident representing a DUI
-                properties:
-                  type:
-                    type: string
-                    enum:
-                      - drunk-driving-no-injury
-                      - drunk-driving-injury
-                      - open-container
-                      - drug-possession
-                      - dui-or-dwi
-                      - driving-while-under-the-influence-of-drugs
-                      - dui-license-suspended
-                      - minor-in-possession
-                  state:
-                    $ref: '#/components/schemas/State'
-                required:
-                  - type
-                  - state
+            $ref: '#/components/schemas/AutoDUI'
         residence:
-          type: object
-          properties:
-            ownership:
-              type: string
-              example: own
-              enum:
-                - other
-                - own
-                - rent
-            type:
-              type: string
-              enum: [ other, apartment, condo, co-op, dwelling, mobile-home, row-house, town-home ]
-            duration:
-              type: integer
-              minimum: 0
-              description: Number of **months** resided at residence
-          required:
-            - ownership
+          $ref: '#/components/schemas/AutoResidence'
         contact:
           $ref: '#/components/schemas/Contact'
         compliance:
@@ -495,19 +336,232 @@ components:
         - contact
         - residence
         - compliance
-    AutoLeadWithPII:
+    AutoLeadComplete:
+      properties:
+        seller:
+          '#/components/schemas/Seller'
+        vehicles:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            $ref: '#/components/schemas/Vehicle'
+        drivers:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            $ref: '#/components/schemas/DriverComplete'
+        coverage:
+          $ref: '#/components/schemas/AutoCoverage'
+        accidents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoAccident'
+        claims:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoClaim'
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoTicket'
+        duis:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoDUI'
+        residence:
+          $ref: '#/components/schemas/AutoResidence'
+        contact:
+          $ref: '#/components/schemas/ContactComplete'
+        compliance:
+          $ref: '#/components/schemas/Compliance'
+      required:
+        - seller
+        - vehicles
+        - drivers
+        - accidents
+        - duis
+        - claims
+        - tickets
+        - coverage
+        - contact
+        - residence
+        - compliance
+    Seller:
+      type: object
+      properties:
+        sub_source:
+          type: string
+          description: The marketing source that the lead originated from
+        exclusive:
+          type: boolean
+          description: Wether the lead is exclusive (true) or shared (false)
+          example: false
+        campaign:
+          type: string
+          description: Seller-specified campaign name
+      required:
+        - exclusive
+        - sub_source
+    AutoCoverage:
+      type: object
+      properties:
+        current:
+          type: boolean
+          description: >
+            Whether the applicant is currently insured (true) or not (false).
+            When `current` is true, all other fields in the `coverage` object
+            are **required**, otherwise they are optional.
+          example: true
+        insurer:
+          $ref: '#/components/schemas/Carrier'
+        duration:
+          type: integer
+          description: >
+            Number of **months** with `insurer` (or blank if not currently
+            insured)
+          minimum: 1
+        expiration:
+          type: string
+          description: Year and month in which the current policy expires
+          pattern: '^\d{4}-\d{2}$'
+          example: '2020-01'
+        current_level:
+          type: string
+          enum:
+            - 15/25
+            - 25/50
+            - 50/100
+            - 100/300
+            - 250/500
+        requested_level:
+          type: string
+          enum:
+            - 15/25
+            - 25/50
+            - 50/100
+            - 100/300
+            - 250/500
+      required:
+        - current
+    AutoAccident:
       allOf:
-        - $ref: '#/components/schemas/AutoLead'
+        - $ref: '#/components/schemas/AutoIncident'
         - type: object
+          description: A specific type of AutoIncident representing an auto accident
           properties:
-            drivers:
-              type: array
-              minItems: 1
-              maxItems: 4
-              items:
-                $ref: '#/components/schemas/DriverWithPII'
-            contact:
-              $ref: '#/components/schemas/ContactWithPII'
+            type:
+              type: string
+              enum:
+                - vehicle-hit-vehicle
+                - at-fault-accident-not-listed
+                - chargeable-accident-injury
+                - chargeable-accident-no-injury
+                - non-fault-accident-not-listed
+                - vehicle-hit-person
+                - hit-and-run-resulting-in-bodily-injury
+                - non-chargeable-accident
+                - other-vehicle-hit-yours
+                - vehicle-hit-property
+                - reckless-driving-resulting-in-an-accident
+                - hit-and-run-no-bi
+                - vehicle-damaged-avoiding-accident
+            damage_type:
+              type: string
+              enum:
+                - not-applicable
+                - people
+                - property
+                - both
+            damage_total:
+              type: integer
+              minimum: 0
+            at_fault:
+              type: boolean
+          required:
+            - type
+            - damage_type
+            - damage_total
+            - at_fault
+    AutoClaim:
+      allOf:
+        - $ref: '#/components/schemas/AutoIncident'
+        - type: object
+          description: A specific type of AutoIncident representing an auto claim
+          properties:
+            type:
+              type: string
+              enum: [ vehicle-hit-animal, car-fire, flood-damage, hail-damage, loss-claim-not-listed, theft-of-stereo, vehicle-stolen, towing-service, vandalism-damage, windshield-damage ]
+            damage_type:
+              type: string
+              enum:
+                - not-applicable
+                - people
+                - property
+                - both
+            damage_total:
+              type: integer
+              minimum: 0
+            at_fault:
+              type: boolean
+          required:
+            - type
+            - damage_type
+            - damage_total
+            - at_fault
+    AutoTicket:
+      allOf:
+        - $ref: '#/components/schemas/AutoIncident'
+        - type: object
+          description: A specific type of AutoIncident representing a ticket
+          properties:
+            type:
+              type: string
+              enum: [ child-seat-violation, driving-with-suspendedrevoked-license, other-unlisted-major-violation, carpool-lane-violation, defective-vehicle-reduced-violation, defective-equipment, expired-emmissions, expired-license, expired-registration, driving-too-fast-for-conditions, following-too-close, failure-to-stop-at-red-light, failure-to-stop-at-a-stop-sign, failure-to-stop, failure-to-stop-for-a-school-bus, no-helmet, inattentive-driving, illegal-lane-change, seat-belt-violation, driving-without-insurance, other-yielding, excessive-noise, passing-in-a-no-passing-zone, failure-to-signal, illegal-passing, speeding-contestroad-racing, reckless-driving, illegal-turn-on-red, passing-on-shoulder, speeding-violation, speed-more-than-10-mph-over, speeding-over-100, speed-more-than-20-mph-over, speed-under-10-mph, failure-to-obey-traffic-signal, turning-violation, unlicensed-driver, illegal-u-turn, ticket-violation-not-listed, suspension, wrong-way-on-a-one-way ]
+          required:
+            - type
+    AutoDUI:
+      allOf:
+        - $ref: '#/components/schemas/AutoIncident'
+        - type: object
+          description: A specific type of AutoIncident representing a DUI
+          properties:
+            type:
+              type: string
+              enum:
+                - drunk-driving-no-injury
+                - drunk-driving-injury
+                - open-container
+                - drug-possession
+                - dui-or-dwi
+                - driving-while-under-the-influence-of-drugs
+                - dui-license-suspended
+                - minor-in-possession
+            state:
+              $ref: '#/components/schemas/State'
+          required:
+            - type
+            - state
+    AutoResidence:
+      type: object
+      properties:
+        ownership:
+          type: string
+          example: own
+          enum:
+            - other
+            - own
+            - rent
+        type:
+          type: string
+          enum: [ other, apartment, condo, co-op, dwelling, mobile-home, row-house, town-home ]
+        duration:
+          type: integer
+          minimum: 0
+          description: Number of **months** resided at residence
+      required:
+        - ownership
     Vehicle:
       type: object
       properties:
@@ -703,7 +757,7 @@ components:
         - bankruptcy
         - repossessions
         - relationship
-    DriverWithPII:
+    DriverComplete:
       allOf:
         - $ref: '#/components/schemas/Driver'
         - type: object
@@ -755,7 +809,7 @@ components:
         - birthdate
         - state
         - postal_code
-    ContactWithPII:
+    ContactComplete:
       allOf:
         - $ref: '#/components/schemas/Contact'
         - type: object
