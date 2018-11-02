@@ -839,7 +839,6 @@ components:
               type: array
               description: >
                 An array of one or more US phone numbers in [E.164 format](https://support.twilio.com/hc/en-us/articles/223183008-Formatting-International-Phone-Numbers)
-              $ref: "#/components/schemas/Phone"
               minItems: 1
               items:
                 - type: string
