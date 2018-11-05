@@ -617,7 +617,7 @@ components:
             - garaged-at-school
             - off-street-at-school
             - on-street-at-school
-- street
+            - street
         annual_distance:
           type: integer
           description: Estimated annual distance in **miles**
