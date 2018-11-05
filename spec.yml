@@ -605,11 +605,19 @@ components:
           enum: [ other, artisan-contractor, business, clergy, commercial, commute, car-pool, transport-for-day-care-center, drive-to-work-or-school-over-15-miles, drive-to-work-or-school-under-15-miles, driven-to-and-from-work, driven-to-and-from-school, for-hire, farm, government-use, pleasure, private-passenger-vehicle-non-commercial, retail, show, service, van-pools-employer-furnished, van-pools-all-other ]
         parking:
           type: string
+          example: garaged-private
           enum:
-            - garaged
+            - carport
             - driveway
-            - on-street
+            - garaged-private
+            - not-garaged
             - off-street
+            - parking-garage
+            - parking-lot
+            - garaged-at-school
+            - off-street-at-school
+            - on-street-at-school
+- street
         annual_distance:
           type: integer
           description: Estimated annual distance in **miles**
