@@ -32,7 +32,7 @@ info:
 
     By default, all valid pings send to the test server will result in a bid.
     The simulated `lead_id` and `bids` may be passed to the 'post' endpoint to
-    further simulate a successful post outcome.
+    further simulate a successful 'post' outcome.
 
     In case you would like to test other scenarios such as rejections or common
     errors, you may provide one of the following values in the
@@ -58,9 +58,9 @@ paths:
       summary: PING - Solicit bids from potential buyers
       description: >
         The seller sends a request to solicit bids from potential
-        buyers. The request contains a partial lead void of PII. A successful
-        response contains zero or more bids from potential buyers, which may
-        be fulfilled later in the POST phase.
+        buyers. The request contains a partial lead excluding PII. A successful
+        response may contain zero or more bids from potential buyers, which the
+        seller can choose to fulfill in the 'post' phase.
       requestBody:
         required: true
         content:
@@ -238,7 +238,7 @@ paths:
                     $ref: '#/components/schemas/TransactionID'
                   lead_id:
                     type: string
-                    description: Unique identifier assigned to this lead (ping & post)
+                    description: Unique identifier assigned to this lead ('ping' & 'post')
                   bids:
                     type: array
                     items:
@@ -284,7 +284,7 @@ components:
       type: object
       description: >
         An auto lead is composed of several sub-objects containing all of
-        the data available for a lead. In the ping phase, all PII is omitted.
+        the data available for a lead. In the 'ping' phase, all PII is omitted.
       properties:
         seller:
           '#/components/schemas/Seller'
