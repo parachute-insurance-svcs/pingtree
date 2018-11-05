@@ -344,7 +344,7 @@ components:
     AutoLeadComplete:
       properties:
         seller:
-          '#/components/schemas/Seller'
+          $ref: '#/components/schemas/Seller'
         vehicles:
           type: array
           minItems: 1
@@ -926,7 +926,7 @@ components:
           description: >
             Whether the buyer is interested in purchasing the lead exclusively
             or shared. The value will depend on what was provided in the request
-            `#/seller/conversion`.
+            `#/lead/seller/conversion`.
           enum:
             - shared
             - exclusive
