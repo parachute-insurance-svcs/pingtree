@@ -1,7 +1,7 @@
-# TODO: include mapping CSVs
+# TODO: include enum mapping CSVs
 openapi: '3.0.2'
 info:
-  title: Open PingTree Specification
+  title: PolicyFuel PingTree Specification
   version: 'v1.0'
   description: >
     ## Overview
