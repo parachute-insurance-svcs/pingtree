@@ -113,13 +113,16 @@ paths:
                       {
                         "bid_id": "2ed7d600-5cb2-4c06-8546-8cf57f16e7aa",
                         "amount": "3.50",
+                        "conversion": "shared",
                         "license": "91023910",
                         "affiliation": "allstate"
                       }
                     ]
                   }
                 multiple_bids:
-                  description: Two potential buyers were found
+                  description: >
+                    Two potential buyers were found; one interested in buying
+                    a shared leg, the other exclusive.
                   value: {
                     "transaction_id": "abf6f998-f038-4d1e-bc81-78e0e0a344b6",
                     "lead_id": "e0945148-71a1-419d-af24-41f5dffb9275",
@@ -127,12 +130,14 @@ paths:
                       {
                         "bid_id": "c544d9ce-9054-4ad8-98b4-d9c892c08a3d",
                         "amount": "1.50",
+                        "conversion": "shared",
                         "license": "91023910",
                         "affiliation": "allstate"
                       },
                       {
                         "bid_id": "dad2e161-f5ff-4beb-9589-75ce38d24ffd",
                         "amount": "2.15",
+                        "conversion": "exclusive",
                         "license": "119102301",
                         "affiliation": "plymouth-rock"
                       }
@@ -191,7 +196,7 @@ paths:
                   description: >
                     One or more of the bids returned in the prior 'ping', **in
                     their entirety** (i.e. including all fields present: bid_id,
-                    amount, license, affiliation).
+                    amount, license, affiliation, conversion).
                   minItems: 1
                   items:
                     $ref: '#/components/schemas/Bid'
@@ -397,10 +402,16 @@ components:
         sub_source:
           type: string
           description: The marketing source that the lead originated from
-        exclusive:
-          type: boolean
-          description: Wether the lead is exclusive (true) or shared (false)
-          example: false
+        conversion:
+          type: string
+          description: >
+            Whether the lead is exclusive (one buyer), shared (many buyers), or
+            either.
+          example: shared
+          enum:
+            - shared
+            - exclusive
+            - either
         campaign:
           type: string
           description: Seller-specified campaign name
@@ -901,12 +912,23 @@ components:
           description: Dollar amount (in decimal format) offered
           pattern: '^\d{1,}.\d{2}$'
           example: '3.50'
+        conversion:
+          type: string
+          example: shared
+          description: >
+            Whether the buyer is interested in purchasing the lead exclusively
+            or shared. The value will depend on what was provided in the request
+            `#/seller/conversion`.
+          enum:
+            - shared
+            - exclusive
         license:
           type: string
           description: Official license number for this bidder
           example: CA-4919120
         affiliation:
           $ref: '#/components/schemas/Carrier'
+
     Vertical:
       type: string
       description: >
