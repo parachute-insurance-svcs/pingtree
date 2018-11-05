@@ -416,8 +416,8 @@ components:
           type: string
           description: Seller-specified campaign name
       required:
-        - exclusive
         - sub_source
+        - conversion
     AutoCoverage:
       type: object
       properties:
