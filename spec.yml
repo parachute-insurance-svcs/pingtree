@@ -816,11 +816,6 @@ components:
     Contact:
       type: object
       properties:
-        birthdate:
-          type: string
-          format: date
-          example: '1978-02-26'
-          description: Date of birth of the applicant
         city:
           type: string
           description: City of residence of the applicant
@@ -832,7 +827,6 @@ components:
         postal_code:
           $ref: '#/components/schemas/ZipCode'
       required:
-        - birthdate
         - state
         - postal_code
     ContactComplete:
