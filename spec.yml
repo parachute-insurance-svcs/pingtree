@@ -46,9 +46,9 @@ info:
     # name: Integration Support
     # email: integrations@policyfuel.com
 servers:
-  - url: https://test.gateway.policyfuel.com/
+  - url: https://test.policyfuel.com/
     description: Testing server with simulated responses
-  - url: https://live.gateway.policyfuel.com/
+  - url: https://live.policyfuel.com/
     description: Production server for real leads
 security:
   - APITokenAuth: []
@@ -856,7 +856,7 @@ components:
               items:
                 type: string
                 format: ^+1\d{10}\$
-                example: +18185554121
+                example: "+18185554121"
             email:
               type: string
               format: email
