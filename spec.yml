@@ -50,10 +50,16 @@ info:
       * `00001` - No bids will be returned on the 'ping'
       * `00002` - Winners will reject the lead on 'post'
       * otherwise - The lead will be accepted on 'ping' and 'post'
-  # TODO: setup contact email
-  # contact:
-    # name: Integration Support
-    # email: integrations@policyfuel.com
+    
+    ## Technical Support
+    
+    We are happy to work with your team to overcome any hurdles you may come across
+    while integrating. Please provide a detailed summary of the issue encountered as
+    well as one or more `transaction_id` values you have collected. Send this to
+    integrations@policyfuel.com and we will respond as quickly as possible.
+  contact:
+    name: Technical Support
+    email: integrations@policyfuel.com
 servers:
   - url: https://test.policyfuel.com/
     description: Testing server with simulated responses
