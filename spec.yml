@@ -23,8 +23,17 @@ info:
     to fulfill the complete lead (with PII). Each bidder has a final
     opporitunity to accept the lead and purchase it, or reject the lead. The
     outcomes are indicated in the response.
+    
+    ## Servers
+    
+    Sellers may send leads to either of the servers below depending on the
+    desired destination. All leads must be sent over secure https connections.
+    
+    **test.policyfuel.com** is used for development and testing (see below).
+    
+    **live.policyfuel.com** is used for live production leads.
 
-    ## Simulation
+    ## Test Simulation
 
     The `test` server is a fully simulated environment which you should use to
     develop your integration with this API. By using known request payload values,
