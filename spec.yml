@@ -220,6 +220,7 @@ paths:
                 lead:
                   $ref: '#/components/schemas/AutoLeadComplete'
               required:
+                - lead_id
                 - vertical
                 - lead
                 - bids
