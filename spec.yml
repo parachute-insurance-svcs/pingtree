@@ -220,10 +220,10 @@ paths:
                 lead:
                   $ref: '#/components/schemas/AutoLeadComplete'
               required:
-                - lead_id
                 - vertical
                 - lead
                 - bids
+                - lead_id
       responses:
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -497,6 +497,8 @@ components:
                 - reckless-driving-resulting-in-an-accident
                 - hit-and-run-no-bi
                 - vehicle-damaged-avoiding-accident
+                - stopped-car-collision
+                - other
             damage_type:
               type: string
               enum:
@@ -548,7 +550,7 @@ components:
           properties:
             type:
               type: string
-              enum: [ child-seat-violation, driving-with-suspendedrevoked-license, other-unlisted-major-violation, carpool-lane-violation, defective-vehicle-reduced-violation, defective-equipment, expired-emmissions, expired-license, expired-registration, driving-too-fast-for-conditions, following-too-close, failure-to-stop-at-red-light, failure-to-stop-at-a-stop-sign, failure-to-stop, failure-to-stop-for-a-school-bus, no-helmet, inattentive-driving, illegal-lane-change, seat-belt-violation, driving-without-insurance, other-yielding, excessive-noise, passing-in-a-no-passing-zone, failure-to-signal, illegal-passing, speeding-contestroad-racing, reckless-driving, illegal-turn-on-red, passing-on-shoulder, speeding-violation, speed-more-than-10-mph-over, speeding-over-100, speed-more-than-20-mph-over, speed-under-10-mph, failure-to-obey-traffic-signal, turning-violation, unlicensed-driver, illegal-u-turn, ticket-violation-not-listed, suspension, wrong-way-on-a-one-way ]
+              enum: [ child-seat-violation, driving-with-suspendedrevoked-license, other-unlisted-major-violation, carpool-lane-violation, defective-vehicle-reduced-violation, defective-equipment, expired-emmissions, expired-license, expired-registration, driving-too-fast-for-conditions, following-too-close, failure-to-stop-at-red-light, failure-to-stop-at-a-stop-sign, failure-to-stop, failure-to-stop-for-a-school-bus, no-helmet, inattentive-driving, illegal-lane-change, seat-belt-violation, driving-without-insurance, other-yielding, excessive-noise, passing-in-a-no-passing-zone, failure-to-signal, illegal-passing, speeding-contestroad-racing, reckless-driving, illegal-turn-on-red, passing-on-shoulder, speeding-violation, speed-more-than-10-mph-over, speeding-over-100, speed-more-than-20-mph-over, speed-under-10-mph, failure-to-obey-traffic-signal, turning-violation, unlicensed-driver, illegal-u-turn, ticket-violation-not-listed, suspension, wrong-way-on-a-one-way, hit-and-run-injury, hit-and-run-no-injury, safety-violation, speeding-other ]
           required:
             - type
     AutoDUI:
@@ -735,6 +737,8 @@ components:
             - masters
             - doctorate
             - vocational-or-technical
+            - other
+            - less-than-highschool
         occupation:
           type: string
           enum: [ other, cpa-or-auditor, actor-or-entertainer-or-dancer, military-officer, claims-adjuster, administrative-clerical, airline-personnel, appraiser, architect, artist, assembler, athlete-professional, auditor, customer-service-or-teller, banking-or-mortgage, barber-or-beautician, broker, sales-outside, casino-worker, cashier, chemist, city-worker, clergy, clergy-or-religious, computer-or-math-or-research, contract-employee, construction-or-facilities, management-consulting, certified-public-accountant, government, non-profit-or-volunteer, counselor, business-owner, child-care-or-nanny, decorator, military-or-defense, delivery-driver, dentist, director, disabled, doctor, education-or-training, electrician, engineering-or-architectecture, engineer, arts-or-entertainment-or-publishing, ceo, manufacturing-or-machinist-or-machine-operator, fire-fighter, health-care, minor, farmer, general-contractor, homemaker, hospitality-or-travel, insurance, instructor-or-coach-or-ta, internet-or-news-media, custodian-or-cleaning-or-janitorial, journalist, construction-trades, lawyer-or-legal, lawyer, legal, librarian-or-historian, lab-technician, maintenance-or-operations, mechanic, manager-supervisor, military-enlisted, military-e1-to-e4, military-e5-to-e7, marketing, model, nurse-or-cna, sales-inside, other-non-technical, finance-or-insurance-professional-with-degree, paramedic, human-resources-or-human-relations, other-professional-with-college-degree, photographer, pharmaceutical-or-biotech, physician, pilot-or-navigator, law-enforcement, postal-worker, professor, transportation-or-logistics, real-estate, retired, restaurant-or-food-service, retail, professional-salaried-or-professional-worker, sales, scientist, school-teacher, self-employed, security, skilled-semi-skilled, student, telecommunications, technology, other-technical, personal-trainer, unknown-or-other, unemployed, veterinarian, waiter-or-bartender-or-host, advertising-or-public-relations ]
@@ -761,7 +765,8 @@ components:
             - lapsed-intentionally
             - pending
             - international
-            # - unknown NOTE: we should add this back if we see a lot of it coming from ACORD leads
+            - restricted
+            - unlicensed
         license_state:
           $ref: '#/components/schemas/State'
         suspended_license:
@@ -869,6 +874,7 @@ components:
               description: >
                 An array of one or more US phone numbers in [E.164 format](https://support.twilio.com/hc/en-us/articles/223183008-Formatting-International-Phone-Numbers)
               minItems: 1
+              maxItems: 3
               items:
                 type: string
                 format: ^+1\d{10}\$
@@ -898,7 +904,6 @@ components:
           type: string
         ip:
           type: string
-          format: ipv4
           example: '14.121.90.15'
         user_agent:
           type: string
