@@ -23,14 +23,14 @@ info:
     to fulfill the complete lead (with PII). Each bidder has a final
     opporitunity to accept the lead and purchase it, or reject the lead. The
     outcomes are indicated in the response.
-    
+
     ## Servers
-    
+
     Sellers may send leads to either of the servers below depending on the
     desired destination. All leads must be sent over secure https connections.
-    
+
     **test.policyfuel.com** is used for development and testing (see below).
-    
+
     **live.policyfuel.com** is used for live production leads.
 
     ## Test Simulation
@@ -50,9 +50,9 @@ info:
       * `00001` - No bids will be returned on the 'ping'
       * `00002` - Winners will reject the lead on 'post'
       * otherwise - The lead will be accepted on 'ping' and 'post'
-    
+
     ## Technical Support
-    
+
     We are happy to work with your team to overcome any hurdles you may come across
     while integrating. Please provide a detailed summary of the issue encountered as
     well as one or more `transaction_id` values you have collected. Send this to
@@ -223,6 +223,864 @@ paths:
                 - vertical
                 - lead
                 - bids
+                - lead_id
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No lead was found with the given ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                bad_lead_id:
+                  description: >
+                    No lead was found with the ID given by `lead_id` in the
+                    request payload.
+                  value: {
+                    "transaction_id": "7d2626fe-fe0c-45d6-981a-a22bfba9ac65",
+                    "error": "not_found",
+                    "message": "No lead was found with the provided ID"
+                  }
+          # TODO: if one or more of the bids could not be found
+          # TODO: if the bids are not consistent
+          # TODO: 409 if the lead was already posted
+        '422':
+          $ref: '#/components/responses/InvalidPayload'
+        '200':
+          description: Successful response containing the result of each bid (accept/reject)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transaction_id:
+                    $ref: '#/components/schemas/TransactionID'
+                  lead_id:
+                    type: string
+                    description: Unique identifier assigned to this lead ('ping' & 'post')
+                  bids:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        bid_id:
+                          type: string
+                          description: Unique identifier assigned to this bid
+                        result:
+                          type: string
+                          enum:
+                            - accepted
+                            - rejected
+                        result_reason:
+                          type: string
+                          enum:
+                            - other
+                            - duplicate
+                            - consumer-blacklisted
+              examples:
+                mixed_results:
+                  description: One bidder accepts, the other rejects
+                  value: {
+                    "transaction_id": "c72a327f-a359-4f54-ad1f-c320832461f1",
+                    "lead_id": "e0945148-71a1-419d-af24-41f5dffb9275",
+                    "bids": [
+                      {
+                        "bid_id": "c544d9ce-9054-4ad8-98b4-d9c892c08a3d",
+                        "result": "accepted"
+                      },
+                      {
+                        "bid_id": "dad2e161-f5ff-4beb-9589-75ce38d24ffd",
+                        "result": "rejected",
+                        "result_reason": "duplicate"
+                      }
+                    ]
+                  }
+        '500':
+          $ref: '#/components/responses/ServerError'
+components:
+  schemas:
+    AutoLeadPartial:
+      type: object
+      description: >
+        An auto lead is composed of several sub-objects containing all of
+        the data available for a lead. In the 'ping' phase, all PII is omitted.
+      properties:
+        seller:
+          $ref: '#/components/schemas/Seller'
+        vehicles:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            $ref: '#/components/schemas/Vehicle'
+        drivers:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            $ref: '#/components/schemas/Driver'
+        coverage:
+          $ref: '#/components/schemas/AutoCoverage'
+        accidents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoAccident'
+        claims:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoClaim'
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoTicket'
+        duis:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoDUI'
+        residence:
+          $ref: '#/components/schemas/AutoResidence'
+        contact:
+          $ref: '#/components/schemas/Contact'
+        compliance:
+          $ref: '#/components/schemas/Compliance'
+      required:
+        - seller
+        - vehicles
+        - drivers
+        - accidents
+        - duis
+        - claims
+        - tickets
+        - coverage
+        - contact
+        - residence
+        - compliance
+    AutoLeadComplete:
+      properties:
+        seller:
+          $ref: '#/components/schemas/Seller'
+        vehicles:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            $ref: '#/components/schemas/Vehicle'
+        drivers:
+          description: >
+            In addition to the data provided in the 'ping' phase, driver objects
+            in the 'post' phase should include a `first_name` and `last_name`.
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            $ref: '#/components/schemas/DriverComplete'
+        coverage:
+          $ref: '#/components/schemas/AutoCoverage'
+        accidents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoAccident'
+        claims:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoClaim'
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoTicket'
+        duis:
+          type: array
+          items:
+            $ref: '#/components/schemas/AutoDUI'
+        residence:
+          $ref: '#/components/schemas/AutoResidence'
+        contact:
+          $ref: '#/components/schemas/ContactComplete'
+        compliance:
+          $ref: '#/components/schemas/Compliance'
+      required:
+        - seller
+        - vehicles
+        - drivers
+        - accidents
+        - duis
+        - claims
+        - tickets
+        - coverage
+        - contact
+        - residence
+        - compliance
+    Seller:
+      type: object
+      properties:
+        sub_source:
+          type: string
+          description: The marketing source that the lead originated from
+        conversion:
+          type: string
+          description: >
+            Whether the lead is exclusive (one buyer), shared (many buyers), or
+            either.
+          example: shared
+          enum:
+            - shared
+            - exclusive
+            - either
+        campaign:
+          type: string
+          description: Seller-specified campaign name
+      required:
+        - sub_source
+        - conversion
+    AutoCoverage:
+      type: object
+      properties:
+        current:
+          type: boolean
+          description: >
+            Whether the applicant is currently insured (true) or not (false).
+            When `current` is true, all other fields in the `coverage` object
+            are **required**, otherwise they are optional.
+          example: true
+        insurer:
+          $ref: '#/components/schemas/Carrier'
+        duration:
+          type: integer
+          description: >
+            Number of **months** with `insurer` (or blank if not currently
+            insured)
+          minimum: 1
+        expiration:
+          type: string
+          description: Year and month in which the current policy expires
+          pattern: '^\d{4}-\d{2}$'
+          example: '2020-01'
+        current_level:
+          type: string
+          enum:
+            - 15/25
+            - 25/50
+            - 50/100
+            - 100/300
+            - 250/500
+        requested_level:
+          type: string
+          enum:
+            - 15/25
+            - 25/50
+            - 50/100
+            - 100/300
+            - 250/500
+      required:
+        - current
+    AutoAccident:
+      allOf:
+        - $ref: '#/components/schemas/AutoIncident'
+        - type: object
+          description: A specific type of AutoIncident representing an auto accident
+          properties:
+            type:
+              type: string
+              enum:
+                - vehicle-hit-vehicle
+                - at-fault-accident-not-listed
+                - chargeable-accident-injury
+                - chargeable-accident-no-injury
+                - non-fault-accident-not-listed
+                - vehicle-hit-person
+                - hit-and-run-resulting-in-bodily-injury
+                - non-chargeable-accident
+                - other-vehicle-hit-yours
+                - vehicle-hit-property
+                - reckless-driving-resulting-in-an-accident
+                - hit-and-run-no-bi
+                - vehicle-damaged-avoiding-accident
+                - stopped-car-collision
+                - other
+            damage_type:
+              type: string
+              enum:
+                - not-applicable
+                - people
+                - property
+                - both
+            damage_total:
+              type: integer
+              minimum: 0
+            at_fault:
+              type: boolean
+          required:
+            - type
+            - damage_type
+            - damage_total
+            - at_fault
+    AutoClaim:
+      allOf:
+        - $ref: '#/components/schemas/AutoIncident'
+        - type: object
+          description: A specific type of AutoIncident representing an auto claim
+          properties:
+            type:
+              type: string
+              enum: [ vehicle-hit-animal, car-fire, flood-damage, hail-damage, loss-claim-not-listed, theft-of-stereo, vehicle-stolen, towing-service, vandalism-damage, windshield-damage ]
+            damage_type:
+              type: string
+              enum:
+                - not-applicable
+                - people
+                - property
+                - both
+            damage_total:
+              type: integer
+              minimum: 0
+            at_fault:
+              type: boolean
+          required:
+            - type
+            - damage_type
+            - damage_total
+            - at_fault
+    AutoTicket:
+      allOf:
+        - $ref: '#/components/schemas/AutoIncident'
+        - type: object
+          description: A specific type of AutoIncident representing a ticket
+          properties:
+            type:
+              type: string
+              enum: [ child-seat-violation, driving-with-suspendedrevoked-license, other-unlisted-major-violation, carpool-lane-violation, defective-vehicle-reduced-violation, defective-equipment, expired-emmissions, expired-license, expired-registration, driving-too-fast-for-conditions, following-too-close, failure-to-stop-at-red-light, failure-to-stop-at-a-stop-sign, failure-to-stop, failure-to-stop-for-a-school-bus, no-helmet, inattentive-driving, illegal-lane-change, seat-belt-violation, driving-without-insurance, other-yielding, excessive-noise, passing-in-a-no-passing-zone, failure-to-signal, illegal-passing, speeding-contestroad-racing, reckless-driving, illegal-turn-on-red, passing-on-shoulder, speeding-violation, speed-more-than-10-mph-over, speeding-over-100, speed-more-than-20-mph-over, speed-under-10-mph, failure-to-obey-traffic-signal, turning-violation, unlicensed-driver, illegal-u-turn, ticket-violation-not-listed, suspension, wrong-way-on-a-one-way, hit-and-run-injury, hit-and-run-no-injury, safety-violation, speeding-other ]
+          required:
+            - type
+    AutoDUI:
+      allOf:
+        - $ref: '#/components/schemas/AutoIncident'
+        - type: object
+          description: A specific type of AutoIncident representing a DUI
+          properties:
+            type:
+              type: string
+              enum:
+                - drunk-driving-no-injury
+                - drunk-driving-injury
+                - open-container
+                - drug-possession
+                - dui-or-dwi
+                - driving-while-under-the-influence-of-drugs
+                - dui-license-suspended
+                - minor-in-possession
+            state:
+              $ref: '#/components/schemas/State'
+          required:
+            - type
+            - state
+    AutoResidence:
+      type: object
+      properties:
+        ownership:
+          type: string
+          example: own
+          enum:
+            - other
+            - own
+            - rent
+        type:
+          type: string
+          enum: [ other, apartment, condo, co-op, dwelling, mobile-home, row-house, town-home ]
+        duration:
+          type: integer
+          minimum: 0
+          description: Number of **months** resided at residence
+      required:
+        - ownership
+    Vehicle:
+      type: object
+      properties:
+        year:
+          type: integer
+          example: 2005
+        make:
+          type: string
+          example: BMW
+        model:
+          type: string
+          example: 3-Series
+        submodel:
+          type: string
+          example: Convertible
+        vin:
+          type: string
+        ownership:
+          type: string
+          enum:
+            - owned
+            - leased
+            - financed
+        use:
+          type: string
+          example: driven-to-and-from-school
+          enum: [ other, artisan-contractor, business, clergy, commercial, commute, car-pool, transport-for-day-care-center, drive-to-work-or-school-over-15-miles, drive-to-work-or-school-under-15-miles, driven-to-and-from-work, driven-to-and-from-school, for-hire, farm, government-use, pleasure, private-passenger-vehicle-non-commercial, retail, show, service, van-pools-employer-furnished, van-pools-all-other ]
+        parking:
+          type: string
+          example: garaged-private
+          enum:
+            - carport
+            - driveway
+            - garaged-private
+            - not-garaged
+            - off-street
+            - parking-garage
+            - parking-lot
+            - garaged-at-school
+            - off-street-at-school
+            - on-street-at-school
+            - street
+        annual_distance:
+          type: integer
+          description: Estimated annual distance in **miles**
+          example: 12000
+          minimum: 0
+        primary_driver:
+          type: integer
+          description: >
+            Index of the drivers in the `drivers` array (0-indexed) who is the
+            primary driver for this vehicle
+          minimum: 0
+          maximum: 3
+        days_driven:
+          type: integer
+          minimum: 0
+          maximum: 7
+          description: Number of days the vehicle is driven in a typical week
+        one_way_distance:
+          type: integer
+          description: Distance driven one way to primary destination (i.e. office)
+          example: 20
+        comp:
+          type: integer
+          description: Applicant's desired comprehensive deductible
+          minimum: 0
+          example: 500
+        coll:
+          type: integer
+          description: Applicant's desired collision deductible
+          minimum: 0
+          example: 500
+        postal_code:
+          $ref: '#/components/schemas/ZipCode'
+      required:
+        - year
+        - make
+        - model
+        - submodel
+        - vin
+        - ownership
+        - use
+        - parking
+        - annual_distance
+        - primary_driver
+        - days_driven
+        - comp
+        - coll
+        - postal_code
+    Driver:
+      type: object
+      properties:
+        relationship:
+          type: string
+          description: Relationship of this driver to the applicant
+          enum:
+            - self
+            - other
+            - spouse
+            - parent
+            - sibling
+            - child
+            - grandparent
+        birthdate:
+          type: string
+          format: date
+          example: '1978-02-26'
+        gender:
+          type: string
+          enum:
+            - female
+            - male
+            - other
+        age_licensed:
+          type: integer
+          example: 16
+          minimum: 14
+        marital_status:
+          type: string
+          example: single
+          enum:
+            - other
+            - unknown
+            - single
+            - married
+            - divorced
+            - domestic-partner
+            - civil-union
+            - separated
+            - widowed
+        education:
+          type: string
+          enum:
+            - some-highschool
+            - highschool
+            - ged
+            - some-college
+            - associate
+            - bachelors
+            - masters
+            - doctorate
+            - vocational-or-technical
+            - other
+            - less-than-highschool
+        occupation:
+          type: string
+          enum: [ other, cpa-or-auditor, actor-or-entertainer-or-dancer, military-officer, claims-adjuster, administrative-clerical, airline-personnel, appraiser, architect, artist, assembler, athlete-professional, auditor, customer-service-or-teller, banking-or-mortgage, barber-or-beautician, broker, sales-outside, casino-worker, cashier, chemist, city-worker, clergy, clergy-or-religious, computer-or-math-or-research, contract-employee, construction-or-facilities, management-consulting, certified-public-accountant, government, non-profit-or-volunteer, counselor, business-owner, child-care-or-nanny, decorator, military-or-defense, delivery-driver, dentist, director, disabled, doctor, education-or-training, electrician, engineering-or-architectecture, engineer, arts-or-entertainment-or-publishing, ceo, manufacturing-or-machinist-or-machine-operator, fire-fighter, health-care, minor, farmer, general-contractor, homemaker, hospitality-or-travel, insurance, instructor-or-coach-or-ta, internet-or-news-media, custodian-or-cleaning-or-janitorial, journalist, construction-trades, lawyer-or-legal, lawyer, legal, librarian-or-historian, lab-technician, maintenance-or-operations, mechanic, manager-supervisor, military-enlisted, military-e1-to-e4, military-e5-to-e7, marketing, model, nurse-or-cna, sales-inside, other-non-technical, finance-or-insurance-professional-with-degree, paramedic, human-resources-or-human-relations, other-professional-with-college-degree, photographer, pharmaceutical-or-biotech, physician, pilot-or-navigator, law-enforcement, postal-worker, professor, transportation-or-logistics, real-estate, retired, restaurant-or-food-service, retail, professional-salaried-or-professional-worker, sales, scientist, school-teacher, self-employed, security, skilled-semi-skilled, student, telecommunications, technology, other-technical, personal-trainer, unknown-or-other, unemployed, veterinarian, waiter-or-bartender-or-host, advertising-or-public-relations ]
+        credit:
+          type: string
+          example: good
+          enum:
+            - unsure
+            - poor
+            - fair
+            - average
+            - good
+            - excellent
+            - superior
+        license_status:
+          type: string
+          description: The current status of the driver's license
+          enum:
+            - active
+            - expired
+            - revoked
+            - suspended
+            - temporary
+            - lapsed-intentionally
+            - pending
+            - international
+            - restricted
+            - unlicensed
+        license_state:
+          $ref: '#/components/schemas/State'
+        suspended_license:
+          type: boolean
+          description: '`true` if the driver has **ever** had a suspended license, otherwise `false`'
+          example: false
+        sr22:
+          type: boolean
+          description: '`true` if the driver has **ever** needed an SR-22, otherwise `false`'
+          example: false
+        bankruptcy:
+          type: boolean
+          description: '`true` if the driver has a history of bankruptcy, otherwise `false`'
+          example: false
+        repossessions:
+          type: boolean
+          description: '`true` if the driver has a history of reposessions, otherwise false'
+          example: false
+      required:
+        - birthdate
+        - gender
+        - credit
+        - sr22
+        - age_licensed
+        - marital_status
+        - education
+        - occupation
+        - suspended_license
+        - license_status
+        - license_state
+        - bankruptcy
+        - repossessions
+        - relationship
+    DriverComplete:
+      allOf:
+        - type: object
+          properties:
+            first_name:
+              type: string
+              description: Driver's first name
+              example: Mary
+            last_name:
+              type: string
+              description: Driver's last name
+              example: Poppins
+          required:
+            - first_name
+            - last_name
+        - $ref: '#/components/schemas/Driver'
+    AutoIncident:
+      type: object
+      properties:
+        date:
+          type: string
+          pattern: '^\d{4}-\d{2}$'
+          description: Year and month of the incident
+          example: 2018-10
+        driver:
+          type: integer
+          minimum: 0
+          maximum: 3
+          description: >
+            Index of the driver in the `drivers` array (0-indexed) who is
+            associated with this incident
+      required:
+        - date
+        - driver
+    Contact:
+      type: object
+      properties:
+        city:
+          type: string
+          description: City of residence of the applicant
+        county:
+          type: string
+          description: County of residence of the applicant
+        state:
+          $ref: '#/components/schemas/State'
+        postal_code:
+          $ref: '#/components/schemas/ZipCode'
+      required:
+        - state
+        - postal_code
+    ContactComplete:
+      description: >
+        In addition to the partial contact data sent in the 'ping',
+        a complete contact sent on 'post' includes: `first_name`, `last_name`,
+        `address`, `phones`, and `email`
+      allOf:
+        - $ref: '#/components/schemas/Contact'
+        - type: object
+          properties:
+            first_name:
+              type: string
+              description: First name of applicant
+            last_name:
+              type: string
+              description: Last name of applicant
+            address:
+              type: string
+              description: Street address
+              example: 1234 Cherry Ln
+            phones:
+              type: array
+              description: >
+                An array of one or more US phone numbers in [E.164 format](https://support.twilio.com/hc/en-us/articles/223183008-Formatting-International-Phone-Numbers)
+              minItems: 1
+              maxItems: 3
+              items:
+                type: string
+                format: ^+1\d{10}\$
+                example: "+18185554121"
+            email:
+              type: string
+              format: email
+              example: example@policyfuel.com
+          required:
+            - first_name
+            - last_name
+            - address
+            - phones
+            - email
+    State:
+      type: string
+      enum: [ AL, AK, AZ, AR, CA, CO, CT, DE, DC, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD, MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI, SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY, AS, GU, MP, PR, UM, VI ]
+    ZipCode:
+      type: string
+      description: US five-digit ZIP
+      pattern: '^\d{5}$'
+      example: '91401'
+    Compliance:
+      type: object
+      properties:
+        consent_language:
+          type: string
+        ip:
+          type: string
+          example: '14.121.90.15'
+        user_agent:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        url:
+          type: string
+          example: 'https://coolleads.com/leadform'
+        LeadiD:
+          type: string
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+          example: 00000000-0000-0000-0000-000000000000
+      required:
+        - consent_language
+        - ip
+        - user_agent
+        - timestamp
+        - url
+    Bid:
+      type: object
+      properties:
+        bid_id:
+          type: string
+          description: Unique identifier assigned to this bid
+          example: 00000000-0000-0000-0000-000000000000
+        amount:
+          type: string
+          description: Dollar amount (in decimal format) offered
+          pattern: '^\d{1,}.\d{2}$'
+          example: '3.50'
+        conversion:
+          type: string
+          example: shared
+          description: >
+            Whether the buyer is interested in purchasing the lead exclusively
+            or shared. The value will depend on what was provided in the request
+            `#/lead/seller/conversion`.
+          enum:
+            - shared
+            - exclusive
+        license:
+          type: string
+          description: Official license number for this bidder
+          example: CA-4919120
+        affiliation:
+          $ref: '#/components/schemas/Carrier'
+
+    Vertical:
+      type: string
+      description: >
+        The business vertical which the applicant is interested in.
+
+        In the future this property will be used to determine the
+        correct `lead` schema, but for now only "auto" is supported.
+      enum:
+        - auto
+    ErrorResponse:
+      type: object
+      properties:
+        transaction_id:
+          $ref: '#/components/schemas/TransactionID'
+        error:
+          type: string
+          description: Error name, appropriate for machine code to interpret
+        message:
+          type: string
+          description: >
+            A descriptive human-readable error message describing the problem.
+            This property should not be used by client code.
+      required:
+        - error
+        - message
+    Carrier:
+      type: string
+      example: allstate
+      description: An insurance carrier
+      enum: [ other, 21st-century-insurance, aaa-auto-club, aabco, aarp, access-insurance, acordia, aegis-security, aetna, affirmative, aflac, ahcp, aig, alfa-insurance, all-nation, all-risk, alleghany-corporation, allianz, allied-group, allmerica, allstate, american-alliance-ins-co, american-banks, american-casualty, american-deposit-insurance, american-direct-business-insurance, american-economy-ins-co, american-empire-insurance, american-family-insurance, american-financial, american-health-underwriters, american-home-assurance, american-income-life-insurance-company, american-insurance, american-international-pacific, american-international-south, american-manufacturers-mutual, american-mayflower-insurance, american-medical-securities, american-motorists-insurance, american-national-property-and-casualty, american-premier, american-protection-insurance, american-reliable-ins-co, american-republic, american-savers-plan, american-service-insurance, american-skyline-insurance-company, american-spirit-insurance, american-standard, american-states, americas-ins-consultants, ameriplan, ameriprise, amerisure, ameritas-life-insurance-company, amex-assurance-co, amica-mutual-ins-co, answer-financial, anthem, api, arbella, arizona-general, armed-forces-insurance, assigned-risk, associated-indemnity, associated-insurance-managers, assurant, atlanta-casualty, atlanta-specialty, atlantic-indemnity, atlantic-mutual-co, atlantis, austin-mutual, auto-owners, avomark, axa-equitable-life-insurance-company, badger-mutual, bankers-life-and-casualty-company, banner-life, berkshire-hathaway, best-agency-usa, blue-cross--blue-shield, bonneville, boston-old-colony, builders, calfarm-ins-co, california-casualty-and-fire-ins-co, california-state-automobile-association, camden, capital-choice, cascade-national-ins, casualty-assurance, centennial, century-national-ins, charter-oak, chartis, chase-insurance-group, chicago-insurance, chubb-group-of-ins-co, church-mutual, cigna, cincinnati-insurance-company, citizens, clarendon, clarendon-national-insurance, cloverleaf, cna, colonial, colonial-penn, combined, commerce-insurance-group, commerce-west, commercial-union, commonwealth, conseco, continental-divide-insurance, continental-ins-co, cotton-states, cottonwood, country-financial, countrywide, criterion, cse-insurance-group, cuna-mutual, dairyland, dakota-fire, deerbrook, depositors-emcasc, direct-general-insurance, dixie, eagle-ins-co, ebco-general, efinancial, ehealth, electric-insurance-co, elephant, emc, empire-fire-and-marine, employers-fire, encompass-insurance-company, ensure, equitable-life, erie-insurance-group, esurance, evergreen-usa-rrg, explorer-ins-co, facility, farm-and-ranch, farm-bureau, farmers-insurance-group, farmers-union, farmland, federal-ins-co, federated-mutual-insurance-company, fidelity-insurance-company, financial-indemnity, fire-and-casualty-insurance-co-of-ct, firemans-fund, first-acceptance-insurance, first-american, first-financial, first-general, first-insurance-company-of-hawaii-ltd, first-national, fm-global, ford-motor-credit, foremost, foresters, fortis, franklin, gainsco, geico, general-accident-insurance, general-re, genworth-financial, globe, gmac-insurance, grange, gre-harleysville-h, great-american-ins-co, great-way, great-west-casualty-company, grinnell-mutual, guaranty-national, guardian-life-insurance-company-of-america, guideone-insurance, halcyon, hanover-ins-co, happy-days, hawkeye-security, hcc-insurance-holdings, health-benefits-direct, health-choice-one, health-net, health-plus-of-america, healthmarkets, healthshare-american, heritage, home-state-county-mutual, horace-mann, humana, iab, ifa-auto-insurance, igf, iis-insurance, infinity-select-insurance, insphere-insurance-solutions, insur-of-evanston, insurance-co-of-the-west, insurance-insight, integon, interstate, jackson-national-life, john-deere, john-hancock-insurance, kaiser-permanente, kemper, kentucky-central, kentucky-farm-bureau, knights-of-columbus, landmark-american-insurance, leader-insurance, leader-national, leader-preferred-insurance, leader-specialty-insurance, league-general, liberty-mutual, liberty-national, liberty-northwest, lincoln-benefit-life, lincoln-national-corporation, ltc-financial-partners, lumbermens-mutual, marathon, markel-corporation, maryland-casualty, massmutual-financial-group, matrix-direct, mega-life-and-health, megamidwest, mendota, merastar, merchants-insurance-group, mercury-insurance-group, metlife, mid-century-insurance, mid-continent-casualty, middlesex-insurance, midland-national-life, midwest-mutual, millbank, millers-mutual, milwaukee, minnehoma, missouri-general, modern-woodmen-of-america, mortgage-protection-bureau, motors, mountain-laurel, mutual-insurance, mutual-of-enumclaw, mutual-of-new-york, mutual-of-omaha, national-alliance, national-ben-franklin-insurance, national-casualty, national-colonial, national-continental, national-fire-insurance-company-of-hartford, national-health-insurance, national-indemnity, national-merit, national-surety-corp, national-union-fire-insurance, nationwide-mutual-insurance-company, natl-farmers-union, new-england-financial, new-jersey-manufacturers-insurance-company, new-york-life-insurance-company, nj-skylands-insurance, north-american, north-pacific, north-pointe, north-shore, northern-capital, northern-states, northland, northwestern-mutual-life, northwestern-pacific-indemnity, ohio-casualty, ohio-security, olympia, omega, omni-insurance, onebeacon, oregon-mutual, orion-insurance, oxford-health-plans, pacific-indemnity, pacific-insurance, pacific-life, pacificare, pafco, paloverde, patriot-general, peak-property-and-casualty-insurance, pemco, penn-america, penn-mutual, pennsylvania-natl, philadelphia-insurance-companies, phoenix, physicians, pinnacle, pioneer-life, plymouth-rock-assurance, preferred-mutual, premier, prestige, primerica, principal-financial, progressive-casualty, protective-life, provident, prudential, qbe-insurance, quality, ramsey, rbc-liberty-insurance, regal, reliance-insurance-company, reliant, republic-indemnity, response-insurance, rli-corp, rockford-mutual, rodney-d-young, safe-auto-insurance-company, safeco, safeguard, safeway, sea-west-insurance, security-insurance, security-national, sedgwick-james, selective-insurance, sentinel-insurance, sentry-insurance, shelter-insurance, skandia-tig-tita, southern-aid-and-insurance-company, spectrum, st-paul-fire-and-marine-ins-co, standard-fire-insurance-company, standard-guaranty, standard-insurance-company, state-and-county-mutual-fire-insurance, state-auto-ins-co, state-farm-insurance, state-mutual, state-national, sun-coast, sun-life-financial, superior, superior-american-insurance, superior-guaranty-insurance, sutter, symetra, the-ahbe-group, the-credo-group, the-general, the-hartford, the-regence-group, tiaa-cref, tico-insurance, tig-countrywide-insurance, titan, total, tower, transamerica, travelers, trinity-universal, tri-state-consumer, trupanion, trust-hall, twin-city-fire-insurance, unicare, unigard-ins, union, united-american, united-financial, united-fire-group, united-health-care, united-insurance, united-pacific-insurance, united-security, unitrin-direct-auto-insurance, universal-underwriters-insurance, unum, us-financial, us-health-advisors, usa-benefitscontinental-general, usaa, usfg, utah-home-and-fire, utica, vasa-north-atlantic, vigilant, viking, wawanesa-mutual, wellington, wellpoint, west-american, west-bend-mutual, west-coast-life, west-plains, western-and-southern-life, western-mutual-insurance-group, western-national, western-southern-life, white-mountains-insurance-group, william-penn, windsor, windstar, wisconsin-mutual, woodlands-financial-group, workmens-auto-insurance, world-insurance, worldwide, yellow-key, yosemite, zurich-north-america ]
+    TransactionID:
+      type: string
+      description: >
+        A unique identifier generated for each API request. You can provide this
+        value to your support representative when debugging your integration.
+  securitySchemes:
+    APITokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: "API Token"
+      description: >
+        **All requests must contain a valid `Authorization` header as described
+        here.**
+
+        The value must be equal to to `Bearer TOKEN` where `TOKEN` is the secret
+        API token provided to you. Example:
+
+        ```
+        Authorization: Bearer qL2VJLfs2sHHUPUnaA2K38ZoinnCPyT57ChgHE4G
+        ```
+  responses:
+    Unauthorized:
+      description: >
+        A valid Authorization header was not provided. See "Authentication" in
+        the docs.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            unauthorized:
+              description: The response body if the request could not be authenticated
+              value: {
+                "transaction_id": "9b0982bb-b491-4648-a5b6-c7596daab4d2",
+                "error": "unauthorized",
+                "message": "You must authenticate with the server. See documentation"
+              }
+    InvalidPayload:
+      description: The request body was not valid per this specification
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorResponse"
+              - type: object
+                properties:
+                  violations:
+                    type: array
+                    description: An array of validation errors found in the request payload
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          description: A valid JSON Reference to the location in the request payload containing the problem
+                        message:
+                          type: string
+                          description: A human-readable description of the problem with the value at `path`
+          examples:
+            invalid_payload:
+              description: The response body if the request could not be authenticated
+              value: {
+                "transaction_id": "91890506-244f-45cd-8e72-b72edbebfebc",
+                "error": "invalid_payload",
+                "message": "One or more of the provided properties was invalid",
+                "violations": [
+                  {
+                    "path": "#/drivers/0/birthdate",
+                    "message": "Property is required but the provided value was null"
+                  }
+                ]
+              }
+    ServerError:
+      description: An unknown server error occurred
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          examples:
+            server_error:
+              description: An unknown server error occurred
+              value: {
+                "transaction_id": "266d545d-20c9-4ae4-8165-9cd9355e6db0",
+                "error": "server_error",
+                "message": "An unknown server error occurred"
+              }
+
+  /pingtree/direct_post:
+    post:
+      summary: POST - Direct post a lead.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - vertical
+                - lead
                 - lead_id
       responses:
         '401':
