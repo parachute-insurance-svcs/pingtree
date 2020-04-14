@@ -314,15 +314,6 @@ paths:
                   type: string
                   description: >
                     The `lead_id` returned in the prior 'ping' response.
-                bids:
-                  type: array
-                  description: >
-                    One or more of the bids returned in the prior 'ping', **in
-                    their entirety** (i.e. including all fields present: bid_id,
-                    amount, license, affiliation, conversion).
-                  minItems: 1
-                  items:
-                    $ref: '#/components/schemas/Bid'
                 vertical:
                   $ref: '#/components/schemas/Vertical'
                 lead:
