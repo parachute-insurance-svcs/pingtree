@@ -310,10 +310,6 @@ paths:
             schema:
               type: object
               properties:
-                lead_id:
-                  type: string
-                  description: >
-                    The `lead_id` returned in the prior 'ping' response.
                 vertical:
                   $ref: '#/components/schemas/Vertical'
                 lead:
@@ -321,7 +317,6 @@ paths:
               required:
                 - vertical
                 - lead
-                - lead_id
       responses:
         '401':
           $ref: '#/components/responses/Unauthorized'
