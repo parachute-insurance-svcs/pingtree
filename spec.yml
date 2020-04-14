@@ -60,13 +60,16 @@ info:
   contact:
     name: Technical Support
     email: integrations@policyfuel.com
+
 servers:
   - url: https://test.policyfuel.com/
     description: Testing server with simulated responses
   - url: https://live.policyfuel.com/
     description: Production server for real leads
+
 security:
   - APITokenAuth: []
+
 paths:
   /pingtree/ping:
     post:
@@ -175,6 +178,7 @@ paths:
                   }
         '500':
           $ref: '#/components/responses/ServerError'
+
   /pingtree/post:
     post:
       summary: POST - Fulfill a complete lead to auction winners
@@ -402,6 +406,7 @@ components:
         - contact
         - residence
         - compliance
+
     AutoLeadComplete:
       properties:
         seller:
@@ -457,6 +462,7 @@ components:
         - contact
         - residence
         - compliance
+
     Seller:
       type: object
       properties:
@@ -479,6 +485,7 @@ components:
       required:
         - sub_source
         - conversion
+
     AutoCoverage:
       type: object
       properties:
@@ -520,6 +527,7 @@ components:
             - 250/500
       required:
         - current
+
     AutoAccident:
       allOf:
         - $ref: '#/components/schemas/AutoIncident'
@@ -561,6 +569,7 @@ components:
             - damage_type
             - damage_total
             - at_fault
+
     AutoClaim:
       allOf:
         - $ref: '#/components/schemas/AutoIncident'
@@ -587,6 +596,7 @@ components:
             - damage_type
             - damage_total
             - at_fault
+
     AutoTicket:
       allOf:
         - $ref: '#/components/schemas/AutoIncident'
@@ -598,6 +608,7 @@ components:
               enum: [ child-seat-violation, driving-with-suspendedrevoked-license, other-unlisted-major-violation, carpool-lane-violation, defective-vehicle-reduced-violation, defective-equipment, expired-emmissions, expired-license, expired-registration, driving-too-fast-for-conditions, following-too-close, failure-to-stop-at-red-light, failure-to-stop-at-a-stop-sign, failure-to-stop, failure-to-stop-for-a-school-bus, no-helmet, inattentive-driving, illegal-lane-change, seat-belt-violation, driving-without-insurance, other-yielding, excessive-noise, passing-in-a-no-passing-zone, failure-to-signal, illegal-passing, speeding-contestroad-racing, reckless-driving, illegal-turn-on-red, passing-on-shoulder, speeding-violation, speed-more-than-10-mph-over, speeding-over-100, speed-more-than-20-mph-over, speed-under-10-mph, failure-to-obey-traffic-signal, turning-violation, unlicensed-driver, illegal-u-turn, ticket-violation-not-listed, suspension, wrong-way-on-a-one-way, hit-and-run-injury, hit-and-run-no-injury, safety-violation, speeding-other ]
           required:
             - type
+
     AutoDUI:
       allOf:
         - $ref: '#/components/schemas/AutoIncident'
@@ -620,6 +631,7 @@ components:
           required:
             - type
             - state
+
     AutoResidence:
       type: object
       properties:
@@ -639,6 +651,7 @@ components:
           description: Number of **months** resided at residence
       required:
         - ownership
+
     Vehicle:
       type: object
       properties:
@@ -729,6 +742,7 @@ components:
         - comp
         - coll
         - postal_code
+
     Driver:
       type: object
       properties:
@@ -845,6 +859,7 @@ components:
         - bankruptcy
         - repossessions
         - relationship
+
     DriverComplete:
       allOf:
         - type: object
@@ -861,6 +876,7 @@ components:
             - first_name
             - last_name
         - $ref: '#/components/schemas/Driver'
+
     AutoIncident:
       type: object
       properties:
@@ -879,6 +895,7 @@ components:
       required:
         - date
         - driver
+
     Contact:
       type: object
       properties:
@@ -895,6 +912,7 @@ components:
       required:
         - state
         - postal_code
+
     ContactComplete:
       description: >
         In addition to the partial contact data sent in the 'ping',
@@ -934,6 +952,7 @@ components:
             - address
             - phones
             - email
+
     State:
       type: string
       enum: [ AL, AK, AZ, AR, CA, CO, CT, DE, DC, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD, MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI, SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY, AS, GU, MP, PR, UM, VI ]
@@ -942,6 +961,7 @@ components:
       description: US five-digit ZIP
       pattern: '^\d{5}$'
       example: '91401'
+
     Compliance:
       type: object
       properties:
@@ -968,6 +988,7 @@ components:
         - user_agent
         - timestamp
         - url
+
     Bid:
       type: object
       properties:
@@ -1006,6 +1027,7 @@ components:
         correct `lead` schema, but for now only "auto" is supported.
       enum:
         - auto
+
     ErrorResponse:
       type: object
       properties:
@@ -1022,16 +1044,19 @@ components:
       required:
         - error
         - message
+
     Carrier:
       type: string
       example: allstate
       description: An insurance carrier
       enum: [ other, 21st-century-insurance, aaa-auto-club, aabco, aarp, access-insurance, acordia, aegis-security, aetna, affirmative, aflac, ahcp, aig, alfa-insurance, all-nation, all-risk, alleghany-corporation, allianz, allied-group, allmerica, allstate, american-alliance-ins-co, american-banks, american-casualty, american-deposit-insurance, american-direct-business-insurance, american-economy-ins-co, american-empire-insurance, american-family-insurance, american-financial, american-health-underwriters, american-home-assurance, american-income-life-insurance-company, american-insurance, american-international-pacific, american-international-south, american-manufacturers-mutual, american-mayflower-insurance, american-medical-securities, american-motorists-insurance, american-national-property-and-casualty, american-premier, american-protection-insurance, american-reliable-ins-co, american-republic, american-savers-plan, american-service-insurance, american-skyline-insurance-company, american-spirit-insurance, american-standard, american-states, americas-ins-consultants, ameriplan, ameriprise, amerisure, ameritas-life-insurance-company, amex-assurance-co, amica-mutual-ins-co, answer-financial, anthem, api, arbella, arizona-general, armed-forces-insurance, assigned-risk, associated-indemnity, associated-insurance-managers, assurant, atlanta-casualty, atlanta-specialty, atlantic-indemnity, atlantic-mutual-co, atlantis, austin-mutual, auto-owners, avomark, axa-equitable-life-insurance-company, badger-mutual, bankers-life-and-casualty-company, banner-life, berkshire-hathaway, best-agency-usa, blue-cross--blue-shield, bonneville, boston-old-colony, builders, calfarm-ins-co, california-casualty-and-fire-ins-co, california-state-automobile-association, camden, capital-choice, cascade-national-ins, casualty-assurance, centennial, century-national-ins, charter-oak, chartis, chase-insurance-group, chicago-insurance, chubb-group-of-ins-co, church-mutual, cigna, cincinnati-insurance-company, citizens, clarendon, clarendon-national-insurance, cloverleaf, cna, colonial, colonial-penn, combined, commerce-insurance-group, commerce-west, commercial-union, commonwealth, conseco, continental-divide-insurance, continental-ins-co, cotton-states, cottonwood, country-financial, countrywide, criterion, cse-insurance-group, cuna-mutual, dairyland, dakota-fire, deerbrook, depositors-emcasc, direct-general-insurance, dixie, eagle-ins-co, ebco-general, efinancial, ehealth, electric-insurance-co, elephant, emc, empire-fire-and-marine, employers-fire, encompass-insurance-company, ensure, equitable-life, erie-insurance-group, esurance, evergreen-usa-rrg, explorer-ins-co, facility, farm-and-ranch, farm-bureau, farmers-insurance-group, farmers-union, farmland, federal-ins-co, federated-mutual-insurance-company, fidelity-insurance-company, financial-indemnity, fire-and-casualty-insurance-co-of-ct, firemans-fund, first-acceptance-insurance, first-american, first-financial, first-general, first-insurance-company-of-hawaii-ltd, first-national, fm-global, ford-motor-credit, foremost, foresters, fortis, franklin, gainsco, geico, general-accident-insurance, general-re, genworth-financial, globe, gmac-insurance, grange, gre-harleysville-h, great-american-ins-co, great-way, great-west-casualty-company, grinnell-mutual, guaranty-national, guardian-life-insurance-company-of-america, guideone-insurance, halcyon, hanover-ins-co, happy-days, hawkeye-security, hcc-insurance-holdings, health-benefits-direct, health-choice-one, health-net, health-plus-of-america, healthmarkets, healthshare-american, heritage, home-state-county-mutual, horace-mann, humana, iab, ifa-auto-insurance, igf, iis-insurance, infinity-select-insurance, insphere-insurance-solutions, insur-of-evanston, insurance-co-of-the-west, insurance-insight, integon, interstate, jackson-national-life, john-deere, john-hancock-insurance, kaiser-permanente, kemper, kentucky-central, kentucky-farm-bureau, knights-of-columbus, landmark-american-insurance, leader-insurance, leader-national, leader-preferred-insurance, leader-specialty-insurance, league-general, liberty-mutual, liberty-national, liberty-northwest, lincoln-benefit-life, lincoln-national-corporation, ltc-financial-partners, lumbermens-mutual, marathon, markel-corporation, maryland-casualty, massmutual-financial-group, matrix-direct, mega-life-and-health, megamidwest, mendota, merastar, merchants-insurance-group, mercury-insurance-group, metlife, mid-century-insurance, mid-continent-casualty, middlesex-insurance, midland-national-life, midwest-mutual, millbank, millers-mutual, milwaukee, minnehoma, missouri-general, modern-woodmen-of-america, mortgage-protection-bureau, motors, mountain-laurel, mutual-insurance, mutual-of-enumclaw, mutual-of-new-york, mutual-of-omaha, national-alliance, national-ben-franklin-insurance, national-casualty, national-colonial, national-continental, national-fire-insurance-company-of-hartford, national-health-insurance, national-indemnity, national-merit, national-surety-corp, national-union-fire-insurance, nationwide-mutual-insurance-company, natl-farmers-union, new-england-financial, new-jersey-manufacturers-insurance-company, new-york-life-insurance-company, nj-skylands-insurance, north-american, north-pacific, north-pointe, north-shore, northern-capital, northern-states, northland, northwestern-mutual-life, northwestern-pacific-indemnity, ohio-casualty, ohio-security, olympia, omega, omni-insurance, onebeacon, oregon-mutual, orion-insurance, oxford-health-plans, pacific-indemnity, pacific-insurance, pacific-life, pacificare, pafco, paloverde, patriot-general, peak-property-and-casualty-insurance, pemco, penn-america, penn-mutual, pennsylvania-natl, philadelphia-insurance-companies, phoenix, physicians, pinnacle, pioneer-life, plymouth-rock-assurance, preferred-mutual, premier, prestige, primerica, principal-financial, progressive-casualty, protective-life, provident, prudential, qbe-insurance, quality, ramsey, rbc-liberty-insurance, regal, reliance-insurance-company, reliant, republic-indemnity, response-insurance, rli-corp, rockford-mutual, rodney-d-young, safe-auto-insurance-company, safeco, safeguard, safeway, sea-west-insurance, security-insurance, security-national, sedgwick-james, selective-insurance, sentinel-insurance, sentry-insurance, shelter-insurance, skandia-tig-tita, southern-aid-and-insurance-company, spectrum, st-paul-fire-and-marine-ins-co, standard-fire-insurance-company, standard-guaranty, standard-insurance-company, state-and-county-mutual-fire-insurance, state-auto-ins-co, state-farm-insurance, state-mutual, state-national, sun-coast, sun-life-financial, superior, superior-american-insurance, superior-guaranty-insurance, sutter, symetra, the-ahbe-group, the-credo-group, the-general, the-hartford, the-regence-group, tiaa-cref, tico-insurance, tig-countrywide-insurance, titan, total, tower, transamerica, travelers, trinity-universal, tri-state-consumer, trupanion, trust-hall, twin-city-fire-insurance, unicare, unigard-ins, union, united-american, united-financial, united-fire-group, united-health-care, united-insurance, united-pacific-insurance, united-security, unitrin-direct-auto-insurance, universal-underwriters-insurance, unum, us-financial, us-health-advisors, usa-benefitscontinental-general, usaa, usfg, utah-home-and-fire, utica, vasa-north-atlantic, vigilant, viking, wawanesa-mutual, wellington, wellpoint, west-american, west-bend-mutual, west-coast-life, west-plains, western-and-southern-life, western-mutual-insurance-group, western-national, western-southern-life, white-mountains-insurance-group, william-penn, windsor, windstar, wisconsin-mutual, woodlands-financial-group, workmens-auto-insurance, world-insurance, worldwide, yellow-key, yosemite, zurich-north-america ]
+
     TransactionID:
       type: string
       description: >
         A unique identifier generated for each API request. You can provide this
         value to your support representative when debugging your integration.
+
   securitySchemes:
     APITokenAuth:
       type: http
@@ -1047,6 +1072,7 @@ components:
         ```
         Authorization: Bearer qL2VJLfs2sHHUPUnaA2K38ZoinnCPyT57ChgHE4G
         ```
+
   responses:
     Unauthorized:
       description: >
@@ -1064,6 +1090,7 @@ components:
                 "error": "unauthorized",
                 "message": "You must authenticate with the server. See documentation"
               }
+
     InvalidPayload:
       description: The request body was not valid per this specification
       content:
@@ -1099,6 +1126,7 @@ components:
                   }
                 ]
               }
+
     ServerError:
       description: An unknown server error occurred
       content:
