@@ -391,6 +391,8 @@ components:
           $ref: '#/components/schemas/HomeInsurancePropertyOccupancy'
         property_type:
           $ref: '#/components/schemas/HomeInsurancePropertyType'
+        roof_type:
+          $ref: '#/components/schemas/HomeInsuranceRoofType'
         stories:
           type: integer
           description: >
@@ -414,6 +416,12 @@ components:
           example: 1975
           description: >
             The year the property was built.
+          minimum: 0
+        upgraded:
+          type: integer
+          example: 1990
+          description: >
+            The year the property was last upgraded.
           minimum: 0
         livable_area:
           type: integer
@@ -448,6 +456,7 @@ components:
         - occupancy
         - postal_code
         - property_type
+        - roof_type
         - state
         - stories
 
@@ -466,14 +475,28 @@ components:
     HomeInsurancePropertyType:
       type: string
       description: Property type
-      example: single_family_home
+      example: single_family
       enum:
-        - single_family_home
         - condominium
         - duplex
-        - mobile_home
         - manufactured_home
-        - apartment
+        - mobile_home
+        - multi_family
+        - single_family
+        - townhome
+        - other
+
+    HomeInsuranceRoofType:
+      type: string
+      description: Roof type
+      example: asphalt_shingle
+      enum:
+        - asphalt_shingle
+        - composition_shingle
+        - wood_shingle
+        - tile_shingle
+        - metal_roof
+        - flat_roof
         - other
 
     HomeInsuranceLeadPartial:
