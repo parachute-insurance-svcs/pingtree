@@ -393,6 +393,10 @@ components:
           $ref: '#/components/schemas/HomeInsurancePropertyType'
         roof_type:
           $ref: '#/components/schemas/HomeInsuranceRoofType'
+        roof_shape:
+          $ref: '#/components/schemas/HomeInsuranceRoofShape'
+        home_security:
+          $ref: '#/components/schemas/HomeInsuranceHomeSecurity'
         stories:
           type: integer
           description: >
@@ -423,6 +427,12 @@ components:
           description: >
             The year the property was last upgraded.
           minimum: 0
+        roof_installed:
+          type: integer
+          example: 1990
+          description: >
+            The year the roof was installed.
+          minimum: 0
         livable_area:
           type: integer
           example: 1550
@@ -435,10 +445,10 @@ components:
             Applicant's desired deductible in US Dollars ($)
           minimum: 0
           example: 2500
-        coverage:
+        dwelling_coverage:
           type: integer
           description: >
-            Applicant's desired coverage amount in US Dollars ($)
+            Applicant's desired dwelling coverage amount in US Dollars ($)
           minimum: 0
           example: 230000
         liability_coverage:
@@ -447,18 +457,27 @@ components:
             Applicant's desired liability coverage amount in US Dollars ($)
           minimum: 0
           example: 300000
+        under_construction:
+          type: boolean
+          description: >
+            Whether the property is currently under construction or renovation.
+          example: true
       required:
         - bathrooms
         - bedrooms
         - built
         - city
+        - home_security
         - livable_area
         - occupancy
         - postal_code
         - property_type
+        - roof_installed
+        - roof_shape
         - roof_type
         - state
         - stories
+        - under_construction
 
     HomeInsurancePropertyOccupancy:
       type: string
@@ -496,8 +515,26 @@ components:
         - wood_shingle
         - tile_shingle
         - metal_roof
-        - flat_roof
         - other
+
+    HomeInsuranceRoofShape:
+      type: string
+      description: Roof shape
+      example: flat
+      enum:
+        - flat
+        - gable
+        - hip
+        - custom
+
+    HomeInsuranceHomeSecurity:
+      type: string
+      description: Home security
+      example: home_only
+      enum:
+        - none
+        - home_only
+        - monitoring
 
     HomeInsuranceLeadPartial:
       type: object
@@ -542,10 +579,7 @@ components:
             are **required**, otherwise they are optional.
           example: true
         insurer:
-          type: string
-          example: allstate
-          description: >
-            Current insurance carrier.
+          $ref: '#/components/schemas/HomeInsuranceCarrier'
         duration:
           type: integer
           description: >
@@ -1271,6 +1305,37 @@ components:
       example: allstate
       description: An insurance carrier
       enum: [ other, 21st-century-insurance, aaa-auto-club, aabco, aarp, access-insurance, acordia, aegis-security, aetna, affirmative, aflac, ahcp, aig, alfa-insurance, all-nation, all-risk, alleghany-corporation, allianz, allied-group, allmerica, allstate, american-alliance-ins-co, american-banks, american-casualty, american-deposit-insurance, american-direct-business-insurance, american-economy-ins-co, american-empire-insurance, american-family-insurance, american-financial, american-health-underwriters, american-home-assurance, american-income-life-insurance-company, american-insurance, american-international-pacific, american-international-south, american-manufacturers-mutual, american-mayflower-insurance, american-medical-securities, american-motorists-insurance, american-national-property-and-casualty, american-premier, american-protection-insurance, american-reliable-ins-co, american-republic, american-savers-plan, american-service-insurance, american-skyline-insurance-company, american-spirit-insurance, american-standard, american-states, americas-ins-consultants, ameriplan, ameriprise, amerisure, ameritas-life-insurance-company, amex-assurance-co, amica-mutual-ins-co, answer-financial, anthem, api, arbella, arizona-general, armed-forces-insurance, assigned-risk, associated-indemnity, associated-insurance-managers, assurant, atlanta-casualty, atlanta-specialty, atlantic-indemnity, atlantic-mutual-co, atlantis, austin-mutual, auto-owners, avomark, axa-equitable-life-insurance-company, badger-mutual, bankers-life-and-casualty-company, banner-life, berkshire-hathaway, best-agency-usa, blue-cross--blue-shield, bonneville, boston-old-colony, builders, calfarm-ins-co, california-casualty-and-fire-ins-co, california-state-automobile-association, camden, capital-choice, cascade-national-ins, casualty-assurance, centennial, century-national-ins, charter-oak, chartis, chase-insurance-group, chicago-insurance, chubb-group-of-ins-co, church-mutual, cigna, cincinnati-insurance-company, citizens, clarendon, clarendon-national-insurance, cloverleaf, cna, colonial, colonial-penn, combined, commerce-insurance-group, commerce-west, commercial-union, commonwealth, conseco, continental-divide-insurance, continental-ins-co, cotton-states, cottonwood, country-financial, countrywide, criterion, cse-insurance-group, cuna-mutual, dairyland, dakota-fire, deerbrook, depositors-emcasc, direct-general-insurance, dixie, eagle-ins-co, ebco-general, efinancial, ehealth, electric-insurance-co, elephant, emc, empire-fire-and-marine, employers-fire, encompass-insurance-company, ensure, equitable-life, erie-insurance-group, esurance, evergreen-usa-rrg, explorer-ins-co, facility, farm-and-ranch, farm-bureau, farmers-insurance-group, farmers-union, farmland, federal-ins-co, federated-mutual-insurance-company, fidelity-insurance-company, financial-indemnity, fire-and-casualty-insurance-co-of-ct, firemans-fund, first-acceptance-insurance, first-american, first-financial, first-general, first-insurance-company-of-hawaii-ltd, first-national, fm-global, ford-motor-credit, foremost, foresters, fortis, franklin, gainsco, geico, general-accident-insurance, general-re, genworth-financial, globe, gmac-insurance, grange, gre-harleysville-h, great-american-ins-co, great-way, great-west-casualty-company, grinnell-mutual, guaranty-national, guardian-life-insurance-company-of-america, guideone-insurance, halcyon, hanover-ins-co, happy-days, hawkeye-security, hcc-insurance-holdings, health-benefits-direct, health-choice-one, health-net, health-plus-of-america, healthmarkets, healthshare-american, heritage, home-state-county-mutual, horace-mann, humana, iab, ifa-auto-insurance, igf, iis-insurance, infinity-select-insurance, insphere-insurance-solutions, insur-of-evanston, insurance-co-of-the-west, insurance-insight, integon, interstate, jackson-national-life, john-deere, john-hancock-insurance, kaiser-permanente, kemper, kentucky-central, kentucky-farm-bureau, knights-of-columbus, landmark-american-insurance, leader-insurance, leader-national, leader-preferred-insurance, leader-specialty-insurance, league-general, liberty-mutual, liberty-national, liberty-northwest, lincoln-benefit-life, lincoln-national-corporation, ltc-financial-partners, lumbermens-mutual, marathon, markel-corporation, maryland-casualty, massmutual-financial-group, matrix-direct, mega-life-and-health, megamidwest, mendota, merastar, merchants-insurance-group, mercury-insurance-group, metlife, mid-century-insurance, mid-continent-casualty, middlesex-insurance, midland-national-life, midwest-mutual, millbank, millers-mutual, milwaukee, minnehoma, missouri-general, modern-woodmen-of-america, mortgage-protection-bureau, motors, mountain-laurel, mutual-insurance, mutual-of-enumclaw, mutual-of-new-york, mutual-of-omaha, national-alliance, national-ben-franklin-insurance, national-casualty, national-colonial, national-continental, national-fire-insurance-company-of-hartford, national-health-insurance, national-indemnity, national-merit, national-surety-corp, national-union-fire-insurance, nationwide-mutual-insurance-company, natl-farmers-union, new-england-financial, new-jersey-manufacturers-insurance-company, new-york-life-insurance-company, nj-skylands-insurance, north-american, north-pacific, north-pointe, north-shore, northern-capital, northern-states, northland, northwestern-mutual-life, northwestern-pacific-indemnity, ohio-casualty, ohio-security, olympia, omega, omni-insurance, onebeacon, oregon-mutual, orion-insurance, oxford-health-plans, pacific-indemnity, pacific-insurance, pacific-life, pacificare, pafco, paloverde, patriot-general, peak-property-and-casualty-insurance, pemco, penn-america, penn-mutual, pennsylvania-natl, philadelphia-insurance-companies, phoenix, physicians, pinnacle, pioneer-life, plymouth-rock-assurance, preferred-mutual, premier, prestige, primerica, principal-financial, progressive-casualty, protective-life, provident, prudential, qbe-insurance, quality, ramsey, rbc-liberty-insurance, regal, reliance-insurance-company, reliant, republic-indemnity, response-insurance, rli-corp, rockford-mutual, rodney-d-young, safe-auto-insurance-company, safeco, safeguard, safeway, sea-west-insurance, security-insurance, security-national, sedgwick-james, selective-insurance, sentinel-insurance, sentry-insurance, shelter-insurance, skandia-tig-tita, southern-aid-and-insurance-company, spectrum, st-paul-fire-and-marine-ins-co, standard-fire-insurance-company, standard-guaranty, standard-insurance-company, state-and-county-mutual-fire-insurance, state-auto-ins-co, state-farm-insurance, state-mutual, state-national, sun-coast, sun-life-financial, superior, superior-american-insurance, superior-guaranty-insurance, sutter, symetra, the-ahbe-group, the-credo-group, the-general, the-hartford, the-regence-group, tiaa-cref, tico-insurance, tig-countrywide-insurance, titan, total, tower, transamerica, travelers, trinity-universal, tri-state-consumer, trupanion, trust-hall, twin-city-fire-insurance, unicare, unigard-ins, union, united-american, united-financial, united-fire-group, united-health-care, united-insurance, united-pacific-insurance, united-security, unitrin-direct-auto-insurance, universal-underwriters-insurance, unum, us-financial, us-health-advisors, usa-benefitscontinental-general, usaa, usfg, utah-home-and-fire, utica, vasa-north-atlantic, vigilant, viking, wawanesa-mutual, wellington, wellpoint, west-american, west-bend-mutual, west-coast-life, west-plains, western-and-southern-life, western-mutual-insurance-group, western-national, western-southern-life, white-mountains-insurance-group, william-penn, windsor, windstar, wisconsin-mutual, woodlands-financial-group, workmens-auto-insurance, world-insurance, worldwide, yellow-key, yosemite, zurich-north-america ]
+
+    HomeInsuranceCarrier:
+      type: string
+      example: allstate
+      description: An insurance carrier
+      enum:
+        - aaa-auto-club
+        - aig
+        - allstate
+        - american-family-insurance
+        - amica-mutual-ins-co
+        - asi
+        - auto-owners
+        - chubb-group-of-ins-co
+        - csaa
+        - erie-insurance-group
+        - farmers-insurance-group
+        - geico
+        - hartford-mutual
+        - homesite
+        - liberty-mutual
+        - metlife
+        - national-general
+        - nationwide-mutual-insurance-company
+        - other
+        - plymouth-rock-assurance
+        - progressive
+        - state-farm-insurance
+        - travelers
+        - universal-underwriters-insurance
+        - usaa
 
     Gender:
       description: Gender
