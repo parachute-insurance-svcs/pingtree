@@ -427,6 +427,12 @@ components:
           description: >
             The year the property was last upgraded.
           minimum: 0
+        owned_for:
+          type: integer
+          example: 5
+          description: >
+            The number of years the property has been owned by thhe lead.
+          minimum: 0
         roof_installed:
           type: integer
           example: 1990
@@ -472,6 +478,7 @@ components:
         - occupancy
         - postal_code
         - property_type
+        - owned_for
         - roof_installed
         - roof_shape
         - roof_type
