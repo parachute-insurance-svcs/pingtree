@@ -198,30 +198,9 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                lead_id:
-                  type: string
-                  description: >
-                    The `lead_id` returned in the prior 'ping' response.
-                bids:
-                  type: array
-                  description: >
-                    One or more of the bids returned in the prior 'ping', **in
-                    their entirety** (i.e. including all fields present: bid_id,
-                    amount, license, affiliation, conversion).
-                  minItems: 1
-                  items:
-                    $ref: '#/components/schemas/Bid'
-                vertical:
-                  $ref: '#/components/schemas/Vertical'
-                lead:
-                  $ref: '#/components/schemas/AutoLeadComplete'
-              required:
-                - vertical
-                - lead
-                - bids
-                - lead_id
+              oneOf:
+                - $ref: '#/components/schemas/AutoPost'
+                - $ref: '#/components/schemas/HomeInsurancePost'
       responses:
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -298,50 +277,6 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /pingtree/direct_post:
-    post:
-      summary: POST - Direct post a lead
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                vertical:
-                  $ref: '#/components/schemas/Vertical'
-                lead:
-                  $ref: '#/components/schemas/AutoLeadComplete'
-              required:
-                - vertical
-                - lead
-      responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/InvalidPayload'
-        '200':
-          description: Successful response containing the result of each bid (accept/reject)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  transaction_id:
-                    $ref: '#/components/schemas/TransactionID'
-                  lead_id:
-                    type: string
-                    description: Unique identifier assigned to this lead
-              examples:
-                mixed_results:
-                  description: One bidder accepts, the other rejects
-                  value: {
-                    "transaction_id": "c72a327f-a359-4f54-ad1f-c320832461f1",
-                    "lead_id": "e0945148-71a1-419d-af24-41f5dffb9275"
-                  }
-        '500':
-          $ref: '#/components/responses/ServerError'
-
 components:
   schemas:
 
@@ -375,6 +310,36 @@ components:
       required:
         - vertical
         - lead
+
+    HomeInsurancePost:
+      type: object
+      properties:
+        lead_id:
+          type: string
+          description: >
+            The `lead_id` returned in the prior 'ping' response.
+        bids:
+          type: array
+          description: >
+            One or more of the bids returned in the prior 'ping', **in
+            their entirety** (i.e. including all fields present: bid_id,
+            amount, license, affiliation, conversion).
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Bid'
+        vertical:
+          type: string
+          description: >
+            The business vertical which the applicant is interested in.
+          enum:
+            - home_insurance
+        lead:
+          $ref: '#/components/schemas/HomeInsuranceLead'
+      required:
+        - vertical
+        - lead
+        - bids
+        - lead_id
 
     HomeInsurancePropertyPartial:
       type: object
@@ -486,6 +451,22 @@ components:
         - stories
         - under_construction
 
+    HomeInsuranceProperty:
+      description: >
+        In addition to the partial contact data sent in the 'ping',
+        a complete contact sent on 'post' includes: `first_name`, `last_name`,
+        `address`, `phones`, and `email`
+      allOf:
+        - $ref: '#/components/schemas/HomeInsurancePropertyPartial'
+        - type: object
+          properties:
+            address:
+              type: string
+              description: Street address
+              example: 1234 Cherry Ln
+          required:
+            - address
+
     HomeInsurancePropertyOccupancy:
       type: string
       description: Occupancy
@@ -559,20 +540,40 @@ components:
         coverage:
           $ref: '#/components/schemas/HomeInsuranceCoverage'
         contact:
+          $ref: '#/components/schemas/HomeInsuranceContactPartial'
+        compliance:
+          $ref: '#/components/schemas/Compliance'
+      required:
+        - seller
+        - properties
+        - coverage
+        - contact
+        - compliance
+
+    HomeInsuranceLead:
+      type: object
+      description: >
+        A home insurance lead is composed of several sub-objects containing all of
+        the data available for a lead. In the 'post' phase, all PII is included.
+      properties:
+        seller:
+          $ref: '#/components/schemas/Seller'
+        properties:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/HomeInsuranceProperty'
+        coverage:
+          $ref: '#/components/schemas/HomeInsuranceCoverage'
+        contact:
           $ref: '#/components/schemas/HomeInsuranceContact'
         compliance:
           $ref: '#/components/schemas/Compliance'
       required:
         - seller
-        - vehicles
-        - drivers
-        - accidents
-        - duis
-        - claims
-        - tickets
+        - properties
         - coverage
         - contact
-        - residence
         - compliance
 
     HomeInsuranceCoverage:
@@ -608,7 +609,7 @@ components:
       required:
         - current
 
-    HomeInsuranceContact:
+    HomeInsuranceContactPartial:
       type: object
       properties:
         city:
@@ -635,6 +636,77 @@ components:
         - marital_status
         - postal_code
         - state
+
+    HomeInsuranceContact:
+      description: >
+        In addition to the partial contact data sent in the 'ping',
+        a complete contact sent on 'post' includes: `first_name`, `last_name`,
+        `address`, `phones`, and `email`
+      allOf:
+        - $ref: '#/components/schemas/HomeInsuranceContactPartial'
+        - type: object
+          properties:
+            first_name:
+              type: string
+              description: First name of applicant
+            last_name:
+              type: string
+              description: Last name of applicant
+            address:
+              type: string
+              description: Street address
+              example: 1234 Cherry Ln
+            phones:
+              type: array
+              description: >
+                An array of one or more US phone numbers in [E.164 format](https://support.twilio.com/hc/en-us/articles/223183008-Formatting-International-Phone-Numbers)
+              minItems: 1
+              maxItems: 3
+              items:
+                type: string
+                format: ^+1\d{10}\$
+                example: "+18185554121"
+            email:
+              type: string
+              format: email
+              example: example@policyfuel.com
+          required:
+            - first_name
+            - last_name
+            - address
+            - phones
+            - email
+
+    AutoPost:
+      type: object
+      properties:
+        lead_id:
+          type: string
+          description: >
+            The `lead_id` returned in the prior 'ping' response.
+        bids:
+          type: array
+          description: >
+            One or more of the bids returned in the prior 'ping', **in
+            their entirety** (i.e. including all fields present: bid_id,
+            amount, license, affiliation, conversion).
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Bid'
+        vertical:
+          type: string
+          description: >
+            The business vertical which the applicant is interested in.
+          enum:
+            - auto
+            - auto_insurance
+        lead:
+          $ref: '#/components/schemas/AutoLeadComplete'
+      required:
+        - vertical
+        - lead
+        - bids
+        - lead_id
 
     AutoLeadPartial:
       type: object
@@ -1279,16 +1351,6 @@ components:
           example: CA-4919120
         affiliation:
           $ref: '#/components/schemas/Carrier'
-
-    Vertical:
-      type: string
-      description: >
-        The business vertical which the applicant is interested in.
-
-        In the future this property will be used to determine the
-        correct `lead` schema, but for now only "auto" is supported.
-      enum:
-        - auto
 
     ErrorResponse:
       type: object
