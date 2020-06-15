@@ -277,8 +277,65 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /pingtree/relay:
+    post:
+      summary: Relay - Relay a fulfilled lead to downstream systems
+      description: >
+        The request payload consists of:
+          * All the same data included in the prior 'post' phase.
+          * Additional meta data about the lead provider relevant to downstream
+            systems.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/AutoRelay'
+                - $ref: '#/components/schemas/HomeInsuranceRelay'
+      responses:
+        '200':
+          description: Successful response containing the result of each bid (accept/reject)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transaction_id:
+                    $ref: '#/components/schemas/TransactionID'
+                  lead_id:
+                    type: string
+                    description: Unique identifier assigned to this lead ('ping' & 'post')
+        '422':
+          $ref: '#/components/responses/InvalidPayload'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
 components:
   schemas:
+
+    RelayAnnotations:
+      type: object
+      properties:
+        lead_provider:
+          $ref: '#/components/schemas/LeadProvider'
+
+    LeadProvider:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Lead provider name.
+
+    AutoRelay:
+      allOf:
+        - $ref: '#/components/schemas/AutoPost'
+        - $ref: '#/components/schemas/RelayAnnotations'
+
+    HomeInsuranceRelay:
+      allOf:
+        - $ref: '#/components/schemas/HomeInsurancePost'
+        - $ref: '#/components/schemas/RelayAnnotations'
 
     AutoPing:
       type: object
