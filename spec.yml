@@ -325,9 +325,12 @@ components:
     RelayMetaData:
       type: object
       properties:
-        distribution_market:
+        market_presence_state:
           type: string
-          description: Distribution market.
+          description: Market presence state (address.)
+        market_presence_carrier:
+          type: string
+          description: Market presence carrier.
 
     LeadProvider:
       type: object
