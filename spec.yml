@@ -319,6 +319,15 @@ components:
       properties:
         lead_provider:
           $ref: '#/components/schemas/LeadProvider'
+        meta_data:
+          $ref: '#/components/schemas/RelayMetaData'
+
+    RelayMetaData:
+      type: object
+      properties:
+        distribution_market:
+          type: string
+          description: Distribution market.
 
     LeadProvider:
       type: object
