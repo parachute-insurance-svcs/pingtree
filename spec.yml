@@ -1102,6 +1102,7 @@ components:
             - owned
             - leased
             - financed
+            - other
         use:
           type: string
           example: driven-to-and-from-school
@@ -1121,6 +1122,7 @@ components:
             - off-street-at-school
             - on-street-at-school
             - street
+            - other
         annual_distance:
           type: integer
           description: Estimated annual distance in **miles**
@@ -1229,6 +1231,7 @@ components:
             - international
             - restricted
             - unlicensed
+            - other
         license_state:
           $ref: '#/components/schemas/State'
         suspended_license:
