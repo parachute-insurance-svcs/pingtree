@@ -909,6 +909,11 @@ components:
         campaign:
           type: string
           description: Seller-specified campaign name
+        reference:
+          type: string
+          description: >
+            Seller's reference to the lead such as an internal ID or UUID. For
+            use in easily cross-referencing leads based on seller knowledge.
       required:
         - sub_source
         - conversion
