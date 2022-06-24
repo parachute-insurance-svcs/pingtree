@@ -295,17 +295,32 @@ paths:
                 - $ref: '#/components/schemas/HomeInsuranceRelay'
       responses:
         '200':
-          description: Successful response containing the result of each bid (accept/reject)
+          description: Successful downstream system parsing response (does not mean the lead was accepted)
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  transaction_id:
-                    $ref: '#/components/schemas/TransactionID'
                   lead_id:
                     type: string
-                    description: Unique identifier assigned to this lead ('ping' & 'post')
+                    description: Unique identifier assigned to this lead by the receiver.
+                  result:
+                    description: Ingestion result
+                    type: string
+                    enum:
+                      - accepted
+                      - rejected
+                  result_reason:
+                    description: Optional ingestion result reason when ingestion result is `rejected`.
+                    type: string
+                    enum:
+                      - duplicate
+                      - filtered
+                      - internal_error
+                      - invalid_data
+                      - unsupported
+                required:
+                  - result
         '422':
           $ref: '#/components/responses/InvalidPayload'
         '500':
