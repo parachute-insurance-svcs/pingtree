@@ -1,7 +1,7 @@
 # TODO: include enum mapping CSVs
 openapi: '3.0.2'
 info:
-  title: PolicyFuel PingTree Specification
+  title: Lead Cognition PingTree Specification
   version: 'v1.0'
   description: >
     ## Overview
@@ -29,9 +29,9 @@ info:
     Sellers may send leads to either of the servers below depending on the
     desired destination. All leads must be sent over secure https connections.
 
-    **test.policyfuel.com** is used for development and testing (see below).
+    **test.leadcognition.ai** is used for development and testing (see below).
 
-    **live.policyfuel.com** is used for live production leads.
+    **live.leadcognition.ai** is used for live production leads.
 
     ## Test Simulation
 
@@ -56,15 +56,15 @@ info:
     We are happy to work with your team to overcome any hurdles you may come across
     while integrating. Please provide a detailed summary of the issue encountered as
     well as one or more `transaction_id` values you have collected. Send this to
-    integrations@policyfuel.com and we will respond as quickly as possible.
+    integrations@leadcognition.ai and we will respond as quickly as possible.
   contact:
     name: Technical Support
-    email: integrations@policyfuel.com
+    email: integrations@leadcognition.ai
 
 servers:
-  - url: https://test.policyfuel.com/
+  - url: https://test.leadcognition.ai/
     description: Testing server with simulated responses
-  - url: https://live.policyfuel.com/
+  - url: https://live.leadcognition.ai/
     description: Production server for real leads
 
 security:
@@ -753,7 +753,7 @@ components:
             email:
               type: string
               format: email
-              example: example@policyfuel.com
+              example: example@leadcognition.ai
           required:
             - first_name
             - last_name
@@ -1371,7 +1371,7 @@ components:
             email:
               type: string
               format: email
-              example: example@policyfuel.com
+              example: example@leadcognition.ai
           required:
             - first_name
             - last_name
