@@ -1174,6 +1174,10 @@ components:
           description: Applicant's desired collision deductible
           minimum: 0
           example: 500
+        address:
+          type: string
+          description: Garaging address
+          example: 1234 Cherry Ln
         postal_code:
           $ref: '#/components/schemas/ZipCode'
       required:
@@ -1195,6 +1199,12 @@ components:
     Driver:
       type: object
       properties:
+        first_name:
+          type: string
+          description: First name of applicant
+        last_name:
+          type: string
+          description: Last name of applicant
         relationship:
           type: string
           description: Relationship of this driver to the applicant
