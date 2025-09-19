@@ -1401,6 +1401,9 @@ components:
     Compliance:
       type: object
       properties:
+        active_prospect_certificate_id:
+          type: string
+          example: eb9fc4dd9bed9ad451a5648946cf4bf09b5bb947
         consent_language:
           type: string
         ip:
@@ -1419,6 +1422,7 @@ components:
           pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
           example: 00000000-0000-0000-0000-000000000000
       required:
+        - active_prospect_certificate_id
         - consent_language
         - ip
         - user_agent
