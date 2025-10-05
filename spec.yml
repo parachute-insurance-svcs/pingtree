@@ -1291,9 +1291,6 @@ components:
         - occupation
         - suspended_license
         - license_status
-        - license_state
-        - bankruptcy
-        - repossessions
         - relationship
 
     DriverComplete:
