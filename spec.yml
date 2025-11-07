@@ -84,6 +84,12 @@ paths:
         content:
           application/json:
             schema:
+              discriminator:
+                propertyName: vertical
+                mapping:
+                  auto: '#/components/schemas/AutoPing'
+                  auto_insurance: '#/components/schemas/AutoPing'
+                  home_insurance: '#/components/schemas/HomeInsurancePing'
               oneOf:
                 - $ref: '#/components/schemas/AutoPing'
                 - $ref: '#/components/schemas/HomeInsurancePing'
@@ -201,6 +207,12 @@ paths:
               oneOf:
                 - $ref: '#/components/schemas/AutoPost'
                 - $ref: '#/components/schemas/HomeInsurancePost'
+              discriminator:
+                propertyName: vertical
+                mapping:
+                  auto: '#/components/schemas/AutoPost'
+                  auto_insurance: '#/components/schemas/AutoPost'
+                  home_insurance: '#/components/schemas/HomeInsurancePost'
       responses:
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -277,6 +289,64 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /pingtree/direct-post:
+    post:
+      summary: DIRECT POST - Directly post a lead
+      description: >
+        Direct post of a lead purchased through a mechanism outside the
+        ping-post process.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/AutoDirectPost'
+                - $ref: '#/components/schemas/HomeInsuranceDirectPost'
+              discriminator:
+                propertyName: vertical
+                mapping:
+                  auto: '#/components/schemas/AutoDirectPost'
+                  auto_insurance: '#/components/schemas/AutoDirectPost'
+                  home_insurance: '#/components/schemas/HomeInsuranceDirectPost'
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/InvalidPayload'
+        '200':
+          description: Successful response to a direct post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transaction_id:
+                    $ref: '#/components/schemas/TransactionID'
+                  lead_id:
+                    type: string
+                    description: Unique identifier assigned to this lead
+                  result:
+                    type: string
+                    enum:
+                      - accepted
+                      - rejected
+                  result_reason:
+                    enum:
+                      - other
+                      - duplicate
+                      - consumer-blacklisted
+              examples:
+                mixed_results:
+                  description: One bidder accepts, the other rejects
+                  value: {
+                    "transaction_id": "c72a327f-a359-4f54-ad1f-c320832461f1",
+                    "lead_id": "e0945148-71a1-419d-af24-41f5dffb9275",
+                    "result": "accepted"
+                  }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /pingtree/relay:
     post:
       summary: Relay - Relay a fulfilled lead to downstream systems
@@ -293,6 +363,12 @@ paths:
               oneOf:
                 - $ref: '#/components/schemas/AutoRelay'
                 - $ref: '#/components/schemas/HomeInsuranceRelay'
+              discriminator:
+                propertyName: vertical
+                mapping:
+                  auto: '#/components/schemas/AutoRelay'
+                  auto_insurance: '#/components/schemas/AutoRelay'
+                  home_insurance: '#/components/schemas/HomeInsuranceRelay'
       responses:
         '200':
           description: Successful downstream system parsing response (does not mean the lead was accepted)
@@ -424,6 +500,24 @@ components:
         - lead
         - bids
         - lead_id
+
+    HomeInsuranceDirectPost:
+      type: object
+      properties:
+        cost:
+          $ref: '#/components/schemas/DirectPostCost'
+        vertical:
+          type: string
+          description: >
+            The business vertical which the applicant is interested in.
+          enum:
+            - home_insurance
+        lead:
+          $ref: '#/components/schemas/HomeInsuranceLead'
+      required:
+        - cost
+        - lead
+        - vertical
 
     HomeInsurancePropertyPartial:
       type: object
@@ -791,6 +885,25 @@ components:
         - lead
         - bids
         - lead_id
+
+    AutoDirectPost:
+      type: object
+      properties:
+        cost:
+          $ref: '#/components/schemas/DirectPostCost'
+        vertical:
+          type: string
+          description: >
+            The business vertical which the applicant is interested in.
+          enum:
+            - auto
+            - auto_insurance
+        lead:
+          $ref: '#/components/schemas/AutoLeadComplete'
+      required:
+        - cost
+        - lead
+        - vertical
 
     AutoLeadPartial:
       type: object
@@ -1446,6 +1559,19 @@ components:
           example: CA-4919120
         affiliation:
           $ref: '#/components/schemas/Carrier'
+
+    DirectPostCost:
+      type: object
+      description: >
+        The cost of purchasing the lead under the non ping-post method.
+      properties:
+        amount:
+          type: string
+          description: Dollar amount (in decimal format) offered
+          pattern: '^\d{1,}.\d{2}$'
+          example: '3.50'
+      required:
+        - amount
 
     ErrorResponse:
       type: object
