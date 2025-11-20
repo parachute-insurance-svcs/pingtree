@@ -1,8 +1,8 @@
 # TODO: include enum mapping CSVs
-openapi: '3.0.2'
+openapi: "3.0.2"
 info:
   title: Lead Cognition PingTree Specification
-  version: 'v1.0'
+  version: "v1.0"
   description: >
     ## Overview
 
@@ -87,18 +87,18 @@ paths:
               discriminator:
                 propertyName: vertical
                 mapping:
-                  auto: '#/components/schemas/AutoPing'
-                  auto_insurance: '#/components/schemas/AutoPing'
-                  home_insurance: '#/components/schemas/HomeInsurancePing'
+                  auto: "#/components/schemas/AutoPing"
+                  auto_insurance: "#/components/schemas/AutoPing"
+                  home_insurance: "#/components/schemas/HomeInsurancePing"
               oneOf:
-                - $ref: '#/components/schemas/AutoPing'
-                - $ref: '#/components/schemas/HomeInsurancePing'
+                - $ref: "#/components/schemas/AutoPing"
+                - $ref: "#/components/schemas/HomeInsurancePing"
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/InvalidPayload'
-        '201':
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/InvalidPayload"
+        "201":
           description: One or more bidders were found
           content:
             application/json:
@@ -106,7 +106,7 @@ paths:
                 type: object
                 properties:
                   transaction_id:
-                    $ref: '#/components/schemas/TransactionID'
+                    $ref: "#/components/schemas/TransactionID"
                   lead_id:
                     type: string
                     description: >
@@ -116,7 +116,7 @@ paths:
                   bids:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Bid'
+                      $ref: "#/components/schemas/Bid"
                 required:
                   - transaction_id
                   - lead_id
@@ -124,44 +124,48 @@ paths:
               examples:
                 single_bid:
                   description: One potential buyer was found
-                  value: {
-                    "transaction_id": "4f091bf8-29ef-4918-810e-f5b0486378bc",
-                    "lead_id": "6d0f0c71-113d-4800-bb83-5602cb9896ec",
-                    "bids": [
-                      {
-                        "bid_id": "2ed7d600-5cb2-4c06-8546-8cf57f16e7aa",
-                        "amount": "3.50",
-                        "conversion": "shared",
-                        "license": "91023910",
-                        "affiliation": "allstate"
-                      }
-                    ]
-                  }
+                  value:
+                    {
+                      "transaction_id": "4f091bf8-29ef-4918-810e-f5b0486378bc",
+                      "lead_id": "6d0f0c71-113d-4800-bb83-5602cb9896ec",
+                      "bids":
+                        [
+                          {
+                            "bid_id": "2ed7d600-5cb2-4c06-8546-8cf57f16e7aa",
+                            "amount": "3.50",
+                            "conversion": "shared",
+                            "license": "91023910",
+                            "affiliation": "allstate",
+                          },
+                        ],
+                    }
                 multiple_bids:
                   description: >
                     Two potential buyers were found; one interested in buying
                     a shared leg, the other exclusive.
-                  value: {
-                    "transaction_id": "abf6f998-f038-4d1e-bc81-78e0e0a344b6",
-                    "lead_id": "e0945148-71a1-419d-af24-41f5dffb9275",
-                    "bids": [
-                      {
-                        "bid_id": "c544d9ce-9054-4ad8-98b4-d9c892c08a3d",
-                        "amount": "1.50",
-                        "conversion": "shared",
-                        "license": "91023910",
-                        "affiliation": "allstate"
-                      },
-                      {
-                        "bid_id": "dad2e161-f5ff-4beb-9589-75ce38d24ffd",
-                        "amount": "2.15",
-                        "conversion": "exclusive",
-                        "license": "119102301",
-                        "affiliation": "plymouth-rock"
-                      }
-                    ]
-                  }
-        '200':
+                  value:
+                    {
+                      "transaction_id": "abf6f998-f038-4d1e-bc81-78e0e0a344b6",
+                      "lead_id": "e0945148-71a1-419d-af24-41f5dffb9275",
+                      "bids":
+                        [
+                          {
+                            "bid_id": "c544d9ce-9054-4ad8-98b4-d9c892c08a3d",
+                            "amount": "1.50",
+                            "conversion": "shared",
+                            "license": "91023910",
+                            "affiliation": "allstate",
+                          },
+                          {
+                            "bid_id": "dad2e161-f5ff-4beb-9589-75ce38d24ffd",
+                            "amount": "2.15",
+                            "conversion": "exclusive",
+                            "license": "119102301",
+                            "affiliation": "plymouth-rock-assurance",
+                          },
+                        ],
+                    }
+        "200":
           description: Lead was valid but no bidders were found
           content:
             application/json:
@@ -169,15 +173,14 @@ paths:
                 type: object
                 properties:
                   transaction_id:
-                    $ref: '#/components/schemas/TransactionID'
+                    $ref: "#/components/schemas/TransactionID"
               examples:
                 no_bidders:
                   description: No bidders were found
-                  value: {
-                    "transaction_id": "34a7381d-e049-49d3-8bf1-9190380a230c"
-                  }
-        '500':
-          $ref: '#/components/responses/ServerError'
+                  value:
+                    { "transaction_id": "34a7381d-e049-49d3-8bf1-9190380a230c" }
+        "500":
+          $ref: "#/components/responses/ServerError"
 
   /pingtree/post:
     post:
@@ -205,18 +208,18 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/AutoPost'
-                - $ref: '#/components/schemas/HomeInsurancePost'
+                - $ref: "#/components/schemas/AutoPost"
+                - $ref: "#/components/schemas/HomeInsurancePost"
               discriminator:
                 propertyName: vertical
                 mapping:
-                  auto: '#/components/schemas/AutoPost'
-                  auto_insurance: '#/components/schemas/AutoPost'
-                  home_insurance: '#/components/schemas/HomeInsurancePost'
+                  auto: "#/components/schemas/AutoPost"
+                  auto_insurance: "#/components/schemas/AutoPost"
+                  home_insurance: "#/components/schemas/HomeInsurancePost"
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
           description: No lead was found with the given ID
           content:
             application/json:
@@ -227,17 +230,18 @@ paths:
                   description: >
                     No lead was found with the ID given by `lead_id` in the
                     request payload.
-                  value: {
-                    "transaction_id": "7d2626fe-fe0c-45d6-981a-a22bfba9ac65",
-                    "error": "not_found",
-                    "message": "No lead was found with the provided ID"
-                  }
+                  value:
+                    {
+                      "transaction_id": "7d2626fe-fe0c-45d6-981a-a22bfba9ac65",
+                      "error": "not_found",
+                      "message": "No lead was found with the provided ID",
+                    }
           # TODO: if one or more of the bids could not be found
           # TODO: if the bids are not consistent
           # TODO: 409 if the lead was already posted
-        '422':
-          $ref: '#/components/responses/InvalidPayload'
-        '200':
+        "422":
+          $ref: "#/components/responses/InvalidPayload"
+        "200":
           description: Successful response containing the result of each bid (accept/reject)
           content:
             application/json:
@@ -245,7 +249,7 @@ paths:
                 type: object
                 properties:
                   transaction_id:
-                    $ref: '#/components/schemas/TransactionID'
+                    $ref: "#/components/schemas/TransactionID"
                   lead_id:
                     type: string
                     description: Unique identifier assigned to this lead ('ping' & 'post')
@@ -271,23 +275,25 @@ paths:
               examples:
                 mixed_results:
                   description: One bidder accepts, the other rejects
-                  value: {
-                    "transaction_id": "c72a327f-a359-4f54-ad1f-c320832461f1",
-                    "lead_id": "e0945148-71a1-419d-af24-41f5dffb9275",
-                    "bids": [
-                      {
-                        "bid_id": "c544d9ce-9054-4ad8-98b4-d9c892c08a3d",
-                        "result": "accepted"
-                      },
-                      {
-                        "bid_id": "dad2e161-f5ff-4beb-9589-75ce38d24ffd",
-                        "result": "rejected",
-                        "result_reason": "duplicate"
-                      }
-                    ]
-                  }
-        '500':
-          $ref: '#/components/responses/ServerError'
+                  value:
+                    {
+                      "transaction_id": "c72a327f-a359-4f54-ad1f-c320832461f1",
+                      "lead_id": "e0945148-71a1-419d-af24-41f5dffb9275",
+                      "bids":
+                        [
+                          {
+                            "bid_id": "c544d9ce-9054-4ad8-98b4-d9c892c08a3d",
+                            "result": "accepted",
+                          },
+                          {
+                            "bid_id": "dad2e161-f5ff-4beb-9589-75ce38d24ffd",
+                            "result": "rejected",
+                            "result_reason": "duplicate",
+                          },
+                        ],
+                    }
+        "500":
+          $ref: "#/components/responses/ServerError"
 
   /pingtree/direct-post:
     post:
@@ -301,20 +307,22 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/AutoDirectPost'
-                - $ref: '#/components/schemas/HomeInsuranceDirectPost'
+                - $ref: "#/components/schemas/AutoDirectPost"
+                - $ref: "#/components/schemas/HomeInsuranceDirectPost"
+                - $ref: "#/components/schemas/ConsumerMortgageDirectPost"
               discriminator:
                 propertyName: vertical
                 mapping:
-                  auto: '#/components/schemas/AutoDirectPost'
-                  auto_insurance: '#/components/schemas/AutoDirectPost'
-                  home_insurance: '#/components/schemas/HomeInsuranceDirectPost'
+                  auto: "#/components/schemas/AutoDirectPost"
+                  auto_insurance: "#/components/schemas/AutoDirectPost"
+                  home_insurance: "#/components/schemas/HomeInsuranceDirectPost"
+                  consumer_mortgage: "#/components/schemas/ConsumerMortgageDirectPost"
       responses:
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/InvalidPayload'
-        '200':
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/InvalidPayload"
+        "200":
           description: Successful response to a direct post
           content:
             application/json:
@@ -322,7 +330,7 @@ paths:
                 type: object
                 properties:
                   transaction_id:
-                    $ref: '#/components/schemas/TransactionID'
+                    $ref: "#/components/schemas/TransactionID"
                   lead_id:
                     type: string
                     description: Unique identifier assigned to this lead
@@ -339,13 +347,14 @@ paths:
               examples:
                 mixed_results:
                   description: One bidder accepts, the other rejects
-                  value: {
-                    "transaction_id": "c72a327f-a359-4f54-ad1f-c320832461f1",
-                    "lead_id": "e0945148-71a1-419d-af24-41f5dffb9275",
-                    "result": "accepted"
-                  }
-        '500':
-          $ref: '#/components/responses/ServerError'
+                  value:
+                    {
+                      "transaction_id": "c72a327f-a359-4f54-ad1f-c320832461f1",
+                      "lead_id": "e0945148-71a1-419d-af24-41f5dffb9275",
+                      "result": "accepted",
+                    }
+        "500":
+          $ref: "#/components/responses/ServerError"
 
   /pingtree/relay:
     post:
@@ -361,16 +370,16 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/AutoRelay'
-                - $ref: '#/components/schemas/HomeInsuranceRelay'
+                - $ref: "#/components/schemas/AutoRelay"
+                - $ref: "#/components/schemas/HomeInsuranceRelay"
               discriminator:
                 propertyName: vertical
                 mapping:
-                  auto: '#/components/schemas/AutoRelay'
-                  auto_insurance: '#/components/schemas/AutoRelay'
-                  home_insurance: '#/components/schemas/HomeInsuranceRelay'
+                  auto: "#/components/schemas/AutoRelay"
+                  auto_insurance: "#/components/schemas/AutoRelay"
+                  home_insurance: "#/components/schemas/HomeInsuranceRelay"
       responses:
-        '200':
+        "200":
           description: Successful downstream system parsing response (does not mean the lead was accepted)
           content:
             application/json:
@@ -397,21 +406,20 @@ paths:
                       - unsupported
                 required:
                   - result
-        '422':
-          $ref: '#/components/responses/InvalidPayload'
-        '500':
-          $ref: '#/components/responses/ServerError'
+        "422":
+          $ref: "#/components/responses/InvalidPayload"
+        "500":
+          $ref: "#/components/responses/ServerError"
 
 components:
   schemas:
-
     RelayAnnotations:
       type: object
       properties:
         lead_provider:
-          $ref: '#/components/schemas/LeadProvider'
+          $ref: "#/components/schemas/LeadProvider"
         meta_data:
-          $ref: '#/components/schemas/RelayMetaData'
+          $ref: "#/components/schemas/RelayMetaData"
 
     RelayMetaData:
       type: object
@@ -432,13 +440,13 @@ components:
 
     AutoRelay:
       allOf:
-        - $ref: '#/components/schemas/AutoPost'
-        - $ref: '#/components/schemas/RelayAnnotations'
+        - $ref: "#/components/schemas/AutoPost"
+        - $ref: "#/components/schemas/RelayAnnotations"
 
     HomeInsuranceRelay:
       allOf:
-        - $ref: '#/components/schemas/HomeInsurancePost'
-        - $ref: '#/components/schemas/RelayAnnotations'
+        - $ref: "#/components/schemas/HomeInsurancePost"
+        - $ref: "#/components/schemas/RelayAnnotations"
 
     AutoPing:
       type: object
@@ -451,7 +459,7 @@ components:
             - auto
             - auto_insurance
         lead:
-          $ref: '#/components/schemas/AutoLeadPartial'
+          $ref: "#/components/schemas/AutoLeadPartial"
       required:
         - vertical
         - lead
@@ -466,7 +474,7 @@ components:
           enum:
             - home_insurance
         lead:
-          $ref: '#/components/schemas/HomeInsuranceLeadPartial'
+          $ref: "#/components/schemas/HomeInsuranceLeadPartial"
       required:
         - vertical
         - lead
@@ -486,7 +494,7 @@ components:
             amount, license, affiliation, conversion).
           minItems: 1
           items:
-            $ref: '#/components/schemas/Bid'
+            $ref: "#/components/schemas/Bid"
         vertical:
           type: string
           description: >
@@ -494,7 +502,7 @@ components:
           enum:
             - home_insurance
         lead:
-          $ref: '#/components/schemas/HomeInsuranceLead'
+          $ref: "#/components/schemas/HomeInsuranceLead"
       required:
         - vertical
         - lead
@@ -505,7 +513,7 @@ components:
       type: object
       properties:
         cost:
-          $ref: '#/components/schemas/DirectPostCost'
+          $ref: "#/components/schemas/DirectPostCost"
         vertical:
           type: string
           description: >
@@ -513,7 +521,7 @@ components:
           enum:
             - home_insurance
         lead:
-          $ref: '#/components/schemas/HomeInsuranceLead'
+          $ref: "#/components/schemas/HomeInsuranceLead"
       required:
         - cost
         - lead
@@ -527,19 +535,19 @@ components:
         city:
           type: string
         state:
-          $ref: '#/components/schemas/State'
+          $ref: "#/components/schemas/State"
         postal_code:
-          $ref: '#/components/schemas/ZipCode'
+          $ref: "#/components/schemas/ZipCode"
         occupancy:
-          $ref: '#/components/schemas/HomeInsurancePropertyOccupancy'
+          $ref: "#/components/schemas/HomeInsurancePropertyOccupancy"
         property_type:
-          $ref: '#/components/schemas/HomeInsurancePropertyType'
+          $ref: "#/components/schemas/HomeInsurancePropertyType"
         roof_type:
-          $ref: '#/components/schemas/HomeInsuranceRoofType'
+          $ref: "#/components/schemas/HomeInsuranceRoofType"
         roof_shape:
-          $ref: '#/components/schemas/HomeInsuranceRoofShape'
+          $ref: "#/components/schemas/HomeInsuranceRoofShape"
         home_security:
-          $ref: '#/components/schemas/HomeInsuranceHomeSecurity'
+          $ref: "#/components/schemas/HomeInsuranceHomeSecurity"
         stories:
           type: integer
           description: >
@@ -635,7 +643,7 @@ components:
         a complete contact sent on 'post' includes: `first_name`, `last_name`,
         `address`, `phones`, and `email`
       allOf:
-        - $ref: '#/components/schemas/HomeInsurancePropertyPartial'
+        - $ref: "#/components/schemas/HomeInsurancePropertyPartial"
         - type: object
           properties:
             address:
@@ -709,18 +717,18 @@ components:
         the data available for a lead. In the 'ping' phase, all PII is omitted.
       properties:
         seller:
-          $ref: '#/components/schemas/Seller'
+          $ref: "#/components/schemas/Seller"
         properties:
           type: array
           minItems: 1
           items:
-            $ref: '#/components/schemas/HomeInsurancePropertyPartial'
+            $ref: "#/components/schemas/HomeInsurancePropertyPartial"
         coverage:
-          $ref: '#/components/schemas/HomeInsuranceCoverage'
+          $ref: "#/components/schemas/HomeInsuranceCoverage"
         contact:
-          $ref: '#/components/schemas/HomeInsuranceContactPartial'
+          $ref: "#/components/schemas/HomeInsuranceContactPartial"
         compliance:
-          $ref: '#/components/schemas/Compliance'
+          $ref: "#/components/schemas/Compliance"
       required:
         - seller
         - properties
@@ -735,18 +743,18 @@ components:
         the data available for a lead. In the 'post' phase, all PII is included.
       properties:
         seller:
-          $ref: '#/components/schemas/Seller'
+          $ref: "#/components/schemas/Seller"
         properties:
           type: array
           minItems: 1
           items:
-            $ref: '#/components/schemas/HomeInsuranceProperty'
+            $ref: "#/components/schemas/HomeInsuranceProperty"
         coverage:
-          $ref: '#/components/schemas/HomeInsuranceCoverage'
+          $ref: "#/components/schemas/HomeInsuranceCoverage"
         contact:
-          $ref: '#/components/schemas/HomeInsuranceContact'
+          $ref: "#/components/schemas/HomeInsuranceContact"
         compliance:
-          $ref: '#/components/schemas/Compliance'
+          $ref: "#/components/schemas/Compliance"
       required:
         - seller
         - properties
@@ -765,7 +773,7 @@ components:
             are **required**, otherwise they are optional.
           example: true
         insurer:
-          $ref: '#/components/schemas/HomeInsuranceCarrier'
+          $ref: "#/components/schemas/HomeInsuranceCarrier"
         duration:
           type: integer
           description: >
@@ -776,7 +784,7 @@ components:
           type: string
           description: Year and month in which the current policy expires
           pattern: '^\d{4}-\d{2}$'
-          example: '2020-01'
+          example: "2020-01"
         claims:
           type: integer
           description: >-
@@ -794,19 +802,19 @@ components:
           type: string
           description: City of residence of the applicant
         state:
-          $ref: '#/components/schemas/State'
+          $ref: "#/components/schemas/State"
         postal_code:
-          $ref: '#/components/schemas/ZipCode'
+          $ref: "#/components/schemas/ZipCode"
         gender:
-          $ref: '#/components/schemas/Gender'
+          $ref: "#/components/schemas/Gender"
         marital_status:
-          $ref: '#/components/schemas/MaritalStatus'
+          $ref: "#/components/schemas/MaritalStatus"
         birthdate:
           type: string
           format: date
-          example: '1978-02-26'
+          example: "1978-02-26"
         credit:
-          $ref: '#/components/schemas/CreditRating'
+          $ref: "#/components/schemas/CreditRating"
       required:
         - birthdate
         - credit
@@ -821,7 +829,7 @@ components:
         a complete contact sent on 'post' includes: `first_name`, `last_name`,
         `address`, `phones`, and `email`
       allOf:
-        - $ref: '#/components/schemas/HomeInsuranceContactPartial'
+        - $ref: "#/components/schemas/HomeInsuranceContactPartial"
         - type: object
           properties:
             first_name:
@@ -870,7 +878,7 @@ components:
             amount, license, affiliation, conversion).
           minItems: 1
           items:
-            $ref: '#/components/schemas/Bid'
+            $ref: "#/components/schemas/Bid"
         vertical:
           type: string
           description: >
@@ -879,7 +887,7 @@ components:
             - auto
             - auto_insurance
         lead:
-          $ref: '#/components/schemas/AutoLeadComplete'
+          $ref: "#/components/schemas/AutoLeadComplete"
       required:
         - vertical
         - lead
@@ -890,7 +898,7 @@ components:
       type: object
       properties:
         cost:
-          $ref: '#/components/schemas/DirectPostCost'
+          $ref: "#/components/schemas/DirectPostCost"
         vertical:
           type: string
           description: >
@@ -899,7 +907,7 @@ components:
             - auto
             - auto_insurance
         lead:
-          $ref: '#/components/schemas/AutoLeadComplete'
+          $ref: "#/components/schemas/AutoLeadComplete"
       required:
         - cost
         - lead
@@ -912,43 +920,43 @@ components:
         the data available for a lead. In the 'ping' phase, all PII is omitted.
       properties:
         seller:
-          $ref: '#/components/schemas/Seller'
+          $ref: "#/components/schemas/Seller"
         vehicles:
           type: array
           minItems: 1
           maxItems: 4
           items:
-            $ref: '#/components/schemas/Vehicle'
+            $ref: "#/components/schemas/Vehicle"
         drivers:
           type: array
           minItems: 1
           maxItems: 4
           items:
-            $ref: '#/components/schemas/Driver'
+            $ref: "#/components/schemas/Driver"
         coverage:
-          $ref: '#/components/schemas/AutoCoverage'
+          $ref: "#/components/schemas/AutoCoverage"
         accidents:
           type: array
           items:
-            $ref: '#/components/schemas/AutoAccident'
+            $ref: "#/components/schemas/AutoAccident"
         claims:
           type: array
           items:
-            $ref: '#/components/schemas/AutoClaim'
+            $ref: "#/components/schemas/AutoClaim"
         tickets:
           type: array
           items:
-            $ref: '#/components/schemas/AutoTicket'
+            $ref: "#/components/schemas/AutoTicket"
         duis:
           type: array
           items:
-            $ref: '#/components/schemas/AutoDUI'
+            $ref: "#/components/schemas/AutoDUI"
         residence:
-          $ref: '#/components/schemas/AutoResidence'
+          $ref: "#/components/schemas/AutoResidence"
         contact:
-          $ref: '#/components/schemas/AutoContact'
+          $ref: "#/components/schemas/AutoContact"
         compliance:
-          $ref: '#/components/schemas/Compliance'
+          $ref: "#/components/schemas/Compliance"
       required:
         - seller
         - vehicles
@@ -961,13 +969,13 @@ components:
     AutoLeadComplete:
       properties:
         seller:
-          $ref: '#/components/schemas/Seller'
+          $ref: "#/components/schemas/Seller"
         vehicles:
           type: array
           minItems: 1
           maxItems: 4
           items:
-            $ref: '#/components/schemas/Vehicle'
+            $ref: "#/components/schemas/Vehicle"
         drivers:
           description: >
             In addition to the data provided in the 'ping' phase, driver objects
@@ -976,31 +984,31 @@ components:
           minItems: 1
           maxItems: 4
           items:
-            $ref: '#/components/schemas/DriverComplete'
+            $ref: "#/components/schemas/DriverComplete"
         coverage:
-          $ref: '#/components/schemas/AutoCoverage'
+          $ref: "#/components/schemas/AutoCoverage"
         accidents:
           type: array
           items:
-            $ref: '#/components/schemas/AutoAccident'
+            $ref: "#/components/schemas/AutoAccident"
         claims:
           type: array
           items:
-            $ref: '#/components/schemas/AutoClaim'
+            $ref: "#/components/schemas/AutoClaim"
         tickets:
           type: array
           items:
-            $ref: '#/components/schemas/AutoTicket'
+            $ref: "#/components/schemas/AutoTicket"
         duis:
           type: array
           items:
-            $ref: '#/components/schemas/AutoDUI'
+            $ref: "#/components/schemas/AutoDUI"
         residence:
-          $ref: '#/components/schemas/AutoResidence'
+          $ref: "#/components/schemas/AutoResidence"
         contact:
-          $ref: '#/components/schemas/AutoContactComplete'
+          $ref: "#/components/schemas/AutoContactComplete"
         compliance:
-          $ref: '#/components/schemas/Compliance'
+          $ref: "#/components/schemas/Compliance"
       required:
         - seller
         - vehicles
@@ -1049,7 +1057,7 @@ components:
             are **required**, otherwise they are optional.
           example: true
         insurer:
-          $ref: '#/components/schemas/Carrier'
+          $ref: "#/components/schemas/Carrier"
         duration:
           type: integer
           description: >
@@ -1060,7 +1068,7 @@ components:
           type: string
           description: Year and month in which the current policy expires
           pattern: '^\d{4}-\d{2}$'
-          example: '2020-01'
+          example: "2020-01"
         current_level:
           type: string
           enum:
@@ -1082,7 +1090,7 @@ components:
 
     AutoAccident:
       allOf:
-        - $ref: '#/components/schemas/AutoIncident'
+        - $ref: "#/components/schemas/AutoIncident"
         - type: object
           description: A specific type of AutoIncident representing an auto accident
           properties:
@@ -1124,13 +1132,25 @@ components:
 
     AutoClaim:
       allOf:
-        - $ref: '#/components/schemas/AutoIncident'
+        - $ref: "#/components/schemas/AutoIncident"
         - type: object
           description: A specific type of AutoIncident representing an auto claim
           properties:
             type:
               type: string
-              enum: [ vehicle-hit-animal, car-fire, flood-damage, hail-damage, loss-claim-not-listed, theft-of-stereo, vehicle-stolen, towing-service, vandalism-damage, windshield-damage ]
+              enum:
+                [
+                  vehicle-hit-animal,
+                  car-fire,
+                  flood-damage,
+                  hail-damage,
+                  loss-claim-not-listed,
+                  theft-of-stereo,
+                  vehicle-stolen,
+                  towing-service,
+                  vandalism-damage,
+                  windshield-damage,
+                ]
             damage_type:
               type: string
               enum:
@@ -1151,19 +1171,66 @@ components:
 
     AutoTicket:
       allOf:
-        - $ref: '#/components/schemas/AutoIncident'
+        - $ref: "#/components/schemas/AutoIncident"
         - type: object
           description: A specific type of AutoIncident representing a ticket
           properties:
             type:
               type: string
-              enum: [ child-seat-violation, driving-with-suspendedrevoked-license, other-unlisted-major-violation, carpool-lane-violation, defective-vehicle-reduced-violation, defective-equipment, expired-emmissions, expired-license, expired-registration, driving-too-fast-for-conditions, following-too-close, failure-to-stop-at-red-light, failure-to-stop-at-a-stop-sign, failure-to-stop, failure-to-stop-for-a-school-bus, no-helmet, inattentive-driving, illegal-lane-change, seat-belt-violation, driving-without-insurance, other-yielding, excessive-noise, passing-in-a-no-passing-zone, failure-to-signal, illegal-passing, speeding-contestroad-racing, reckless-driving, illegal-turn-on-red, passing-on-shoulder, speeding-violation, speed-more-than-10-mph-over, speeding-over-100, speed-more-than-20-mph-over, speed-under-10-mph, failure-to-obey-traffic-signal, turning-violation, unlicensed-driver, illegal-u-turn, ticket-violation-not-listed, suspension, wrong-way-on-a-one-way, hit-and-run-injury, hit-and-run-no-injury, safety-violation, speeding-other ]
+              enum:
+                [
+                  child-seat-violation,
+                  driving-with-suspendedrevoked-license,
+                  other-unlisted-major-violation,
+                  carpool-lane-violation,
+                  defective-vehicle-reduced-violation,
+                  defective-equipment,
+                  expired-emmissions,
+                  expired-license,
+                  expired-registration,
+                  driving-too-fast-for-conditions,
+                  following-too-close,
+                  failure-to-stop-at-red-light,
+                  failure-to-stop-at-a-stop-sign,
+                  failure-to-stop,
+                  failure-to-stop-for-a-school-bus,
+                  no-helmet,
+                  inattentive-driving,
+                  illegal-lane-change,
+                  seat-belt-violation,
+                  driving-without-insurance,
+                  other-yielding,
+                  excessive-noise,
+                  passing-in-a-no-passing-zone,
+                  failure-to-signal,
+                  illegal-passing,
+                  speeding-contestroad-racing,
+                  reckless-driving,
+                  illegal-turn-on-red,
+                  passing-on-shoulder,
+                  speeding-violation,
+                  speed-more-than-10-mph-over,
+                  speeding-over-100,
+                  speed-more-than-20-mph-over,
+                  speed-under-10-mph,
+                  failure-to-obey-traffic-signal,
+                  turning-violation,
+                  unlicensed-driver,
+                  illegal-u-turn,
+                  ticket-violation-not-listed,
+                  suspension,
+                  wrong-way-on-a-one-way,
+                  hit-and-run-injury,
+                  hit-and-run-no-injury,
+                  safety-violation,
+                  speeding-other,
+                ]
           required:
             - type
 
     AutoDUI:
       allOf:
-        - $ref: '#/components/schemas/AutoIncident'
+        - $ref: "#/components/schemas/AutoIncident"
         - type: object
           description: A specific type of AutoIncident representing a DUI
           properties:
@@ -1179,7 +1246,7 @@ components:
                 - dui-license-suspended
                 - minor-in-possession
             state:
-              $ref: '#/components/schemas/State'
+              $ref: "#/components/schemas/State"
           required:
             - type
             - state
@@ -1196,7 +1263,17 @@ components:
             - rent
         type:
           type: string
-          enum: [ other, apartment, condo, co-op, dwelling, mobile-home, row-house, town-home ]
+          enum:
+            [
+              other,
+              apartment,
+              condo,
+              co-op,
+              dwelling,
+              mobile-home,
+              row-house,
+              town-home,
+            ]
         duration:
           type: integer
           minimum: 0
@@ -1231,7 +1308,31 @@ components:
         use:
           type: string
           example: driven-to-and-from-school
-          enum: [ other, artisan-contractor, business, clergy, commercial, commute, car-pool, transport-for-day-care-center, drive-to-work-or-school-over-15-miles, drive-to-work-or-school-under-15-miles, driven-to-and-from-work, driven-to-and-from-school, for-hire, farm, government-use, pleasure, private-passenger-vehicle-non-commercial, retail, show, service, van-pools-employer-furnished, van-pools-all-other ]
+          enum:
+            [
+              other,
+              artisan-contractor,
+              business,
+              clergy,
+              commercial,
+              commute,
+              car-pool,
+              transport-for-day-care-center,
+              drive-to-work-or-school-over-15-miles,
+              drive-to-work-or-school-under-15-miles,
+              driven-to-and-from-work,
+              driven-to-and-from-school,
+              for-hire,
+              farm,
+              government-use,
+              pleasure,
+              private-passenger-vehicle-non-commercial,
+              retail,
+              show,
+              service,
+              van-pools-employer-furnished,
+              van-pools-all-other,
+            ]
         parking:
           type: string
           example: garaged-private
@@ -1284,7 +1385,7 @@ components:
           description: Garaging address
           example: 1234 Cherry Ln
         postal_code:
-          $ref: '#/components/schemas/ZipCode'
+          $ref: "#/components/schemas/ZipCode"
       required:
         - year
         - make
@@ -1324,15 +1425,15 @@ components:
         birthdate:
           type: string
           format: date
-          example: '1978-02-26'
+          example: "1978-02-26"
         gender:
-          $ref: '#/components/schemas/Gender'
+          $ref: "#/components/schemas/Gender"
         age_licensed:
           type: integer
           example: 16
           minimum: 14
         marital_status:
-          $ref: '#/components/schemas/MaritalStatus'
+          $ref: "#/components/schemas/MaritalStatus"
         education:
           type: string
           enum:
@@ -1349,9 +1450,121 @@ components:
             - less-than-highschool
         occupation:
           type: string
-          enum: [ other, cpa-or-auditor, actor-or-entertainer-or-dancer, military-officer, claims-adjuster, administrative-clerical, airline-personnel, appraiser, architect, artist, assembler, athlete-professional, auditor, customer-service-or-teller, banking-or-mortgage, barber-or-beautician, broker, sales-outside, casino-worker, cashier, chemist, city-worker, clergy, clergy-or-religious, computer-or-math-or-research, contract-employee, construction-or-facilities, management-consulting, certified-public-accountant, government, non-profit-or-volunteer, counselor, business-owner, child-care-or-nanny, decorator, military-or-defense, delivery-driver, dentist, director, disabled, doctor, education-or-training, electrician, engineering-or-architectecture, engineer, arts-or-entertainment-or-publishing, ceo, manufacturing-or-machinist-or-machine-operator, fire-fighter, health-care, minor, farmer, general-contractor, homemaker, hospitality-or-travel, insurance, instructor-or-coach-or-ta, internet-or-news-media, custodian-or-cleaning-or-janitorial, journalist, construction-trades, lawyer-or-legal, lawyer, legal, librarian-or-historian, lab-technician, maintenance-or-operations, mechanic, manager-supervisor, military-enlisted, military-e1-to-e4, military-e5-to-e7, marketing, model, nurse-or-cna, sales-inside, other-non-technical, finance-or-insurance-professional-with-degree, paramedic, human-resources-or-human-relations, other-professional-with-college-degree, photographer, pharmaceutical-or-biotech, physician, pilot-or-navigator, law-enforcement, postal-worker, professor, transportation-or-logistics, real-estate, retired, restaurant-or-food-service, retail, professional-salaried-or-professional-worker, sales, scientist, school-teacher, self-employed, security, skilled-semi-skilled, student, telecommunications, technology, other-technical, personal-trainer, unknown-or-other, unemployed, veterinarian, waiter-or-bartender-or-host, advertising-or-public-relations ]
+          enum:
+            [
+              other,
+              cpa-or-auditor,
+              actor-or-entertainer-or-dancer,
+              military-officer,
+              claims-adjuster,
+              administrative-clerical,
+              airline-personnel,
+              appraiser,
+              architect,
+              artist,
+              assembler,
+              athlete-professional,
+              auditor,
+              customer-service-or-teller,
+              banking-or-mortgage,
+              barber-or-beautician,
+              broker,
+              sales-outside,
+              casino-worker,
+              cashier,
+              chemist,
+              city-worker,
+              clergy,
+              clergy-or-religious,
+              computer-or-math-or-research,
+              contract-employee,
+              construction-or-facilities,
+              management-consulting,
+              certified-public-accountant,
+              government,
+              non-profit-or-volunteer,
+              counselor,
+              business-owner,
+              child-care-or-nanny,
+              decorator,
+              military-or-defense,
+              delivery-driver,
+              dentist,
+              director,
+              disabled,
+              doctor,
+              education-or-training,
+              electrician,
+              engineering-or-architectecture,
+              engineer,
+              arts-or-entertainment-or-publishing,
+              ceo,
+              manufacturing-or-machinist-or-machine-operator,
+              fire-fighter,
+              health-care,
+              minor,
+              farmer,
+              general-contractor,
+              homemaker,
+              hospitality-or-travel,
+              insurance,
+              instructor-or-coach-or-ta,
+              internet-or-news-media,
+              custodian-or-cleaning-or-janitorial,
+              journalist,
+              construction-trades,
+              lawyer-or-legal,
+              lawyer,
+              legal,
+              librarian-or-historian,
+              lab-technician,
+              maintenance-or-operations,
+              mechanic,
+              manager-supervisor,
+              military-enlisted,
+              military-e1-to-e4,
+              military-e5-to-e7,
+              marketing,
+              model,
+              nurse-or-cna,
+              sales-inside,
+              other-non-technical,
+              finance-or-insurance-professional-with-degree,
+              paramedic,
+              human-resources-or-human-relations,
+              other-professional-with-college-degree,
+              photographer,
+              pharmaceutical-or-biotech,
+              physician,
+              pilot-or-navigator,
+              law-enforcement,
+              postal-worker,
+              professor,
+              transportation-or-logistics,
+              real-estate,
+              retired,
+              restaurant-or-food-service,
+              retail,
+              professional-salaried-or-professional-worker,
+              sales,
+              scientist,
+              school-teacher,
+              self-employed,
+              security,
+              skilled-semi-skilled,
+              student,
+              telecommunications,
+              technology,
+              other-technical,
+              personal-trainer,
+              unknown-or-other,
+              unemployed,
+              veterinarian,
+              waiter-or-bartender-or-host,
+              advertising-or-public-relations,
+            ]
         credit:
-          $ref: '#/components/schemas/CreditRating'
+          $ref: "#/components/schemas/CreditRating"
         license_status:
           type: string
           description: The current status of the driver's license
@@ -1368,22 +1581,22 @@ components:
             - unlicensed
             - other
         license_state:
-          $ref: '#/components/schemas/State'
+          $ref: "#/components/schemas/State"
         suspended_license:
           type: boolean
-          description: '`true` if the driver has **ever** had a suspended license, otherwise `false`'
+          description: "`true` if the driver has **ever** had a suspended license, otherwise `false`"
           example: false
         sr22:
           type: boolean
-          description: '`true` if the driver has **ever** needed an SR-22, otherwise `false`'
+          description: "`true` if the driver has **ever** needed an SR-22, otherwise `false`"
           example: false
         bankruptcy:
           type: boolean
-          description: '`true` if the driver has a history of bankruptcy, otherwise `false`'
+          description: "`true` if the driver has a history of bankruptcy, otherwise `false`"
           example: false
         repossessions:
           type: boolean
-          description: '`true` if the driver has a history of reposessions, otherwise false'
+          description: "`true` if the driver has a history of reposessions, otherwise false"
           example: false
       required:
         - birthdate
@@ -1413,7 +1626,7 @@ components:
           required:
             - first_name
             - last_name
-        - $ref: '#/components/schemas/Driver'
+        - $ref: "#/components/schemas/Driver"
 
     AutoIncident:
       type: object
@@ -1444,9 +1657,9 @@ components:
           type: string
           description: County of residence of the applicant
         state:
-          $ref: '#/components/schemas/State'
+          $ref: "#/components/schemas/State"
         postal_code:
-          $ref: '#/components/schemas/ZipCode'
+          $ref: "#/components/schemas/ZipCode"
       required:
         - state
         - postal_code
@@ -1457,7 +1670,7 @@ components:
         a complete contact sent on 'post' includes: `first_name`, `last_name`,
         `address`, `phones`, and `email`
       allOf:
-        - $ref: '#/components/schemas/AutoContact'
+        - $ref: "#/components/schemas/AutoContact"
         - type: object
           properties:
             first_name:
@@ -1493,12 +1706,71 @@ components:
 
     State:
       type: string
-      enum: [ AL, AK, AZ, AR, CA, CO, CT, DE, DC, FL, GA, HI, ID, IL, IN, IA, KS, KY, LA, ME, MD, MA, MI, MN, MS, MO, MT, NE, NV, NH, NJ, NM, NY, NC, ND, OH, OK, OR, PA, RI, SC, SD, TN, TX, UT, VT, VA, WA, WV, WI, WY, AS, GU, MP, PR, UM, VI ]
+      enum:
+        [
+          AL,
+          AK,
+          AZ,
+          AR,
+          CA,
+          CO,
+          CT,
+          DE,
+          DC,
+          FL,
+          GA,
+          HI,
+          ID,
+          IL,
+          IN,
+          IA,
+          KS,
+          KY,
+          LA,
+          ME,
+          MD,
+          MA,
+          MI,
+          MN,
+          MS,
+          MO,
+          MT,
+          NE,
+          NV,
+          NH,
+          NJ,
+          NM,
+          NY,
+          NC,
+          ND,
+          OH,
+          OK,
+          OR,
+          PA,
+          RI,
+          SC,
+          SD,
+          TN,
+          TX,
+          UT,
+          VT,
+          VA,
+          WA,
+          WV,
+          WI,
+          WY,
+          AS,
+          GU,
+          MP,
+          PR,
+          UM,
+          VI,
+        ]
     ZipCode:
       type: string
       description: US five-digit ZIP
       pattern: '^\d{5}$'
-      example: '91401'
+      example: "91401"
 
     Compliance:
       type: object
@@ -1510,7 +1782,7 @@ components:
           type: string
         ip:
           type: string
-          example: '14.121.90.15'
+          example: "14.121.90.15"
         user_agent:
           type: string
         timestamp:
@@ -1518,10 +1790,10 @@ components:
           format: date-time
         url:
           type: string
-          example: 'https://coolleads.com/leadform'
+          example: "https://coolleads.com/leadform"
         LeadiD:
           type: string
-          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: 00000000-0000-0000-0000-000000000000
       required:
         - active_prospect_certificate_id
@@ -1542,7 +1814,7 @@ components:
           type: string
           description: Dollar amount (in decimal format) offered
           pattern: '^\d{1,}.\d{2}$'
-          example: '3.50'
+          example: "3.50"
         conversion:
           type: string
           example: shared
@@ -1558,7 +1830,7 @@ components:
           description: Official license number for this bidder
           example: CA-4919120
         affiliation:
-          $ref: '#/components/schemas/Carrier'
+          $ref: "#/components/schemas/Carrier"
 
     DirectPostCost:
       type: object
@@ -1569,7 +1841,7 @@ components:
           type: string
           description: Dollar amount (in decimal format) offered
           pattern: '^\d{1,}.\d{2}$'
-          example: '3.50'
+          example: "3.50"
       required:
         - amount
 
@@ -1577,7 +1849,7 @@ components:
       type: object
       properties:
         transaction_id:
-          $ref: '#/components/schemas/TransactionID'
+          $ref: "#/components/schemas/TransactionID"
         error:
           type: string
           description: Error name, appropriate for machine code to interpret
@@ -2063,6 +2335,244 @@ components:
         - universal-underwriters-insurance
         - usaa
 
+    ConsumerMortgageDirectPost:
+      type: object
+      properties:
+        cost:
+          $ref: "#/components/schemas/DirectPostCost"
+        vertical:
+          type: string
+          description: >
+            The business vertical which the applicant is interested in.
+          enum:
+            - consumer_mortgage
+        lead:
+          $ref: "#/components/schemas/ConsumerMortgageLead"
+      required:
+        - cost
+        - lead
+        - vertical
+
+    ConsumerMortgageLead:
+      type: object
+      description: >
+        A consumer mortgage lead is composed of several sub-objects containing all of
+        the data available for a lead. In the 'post' phase, all PII is included.
+      properties:
+        seller:
+          $ref: "#/components/schemas/Seller"
+        properties:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ConsumerMortgageProperty"
+        borrowers:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ConsumerMortgageBorrower"
+        contact:
+          $ref: "#/components/schemas/ConsumerMortgageContact"
+        compliance:
+          $ref: "#/components/schemas/Compliance"
+      required:
+        - seller
+        - properties
+        - borrowers
+        - contact
+        - compliance
+
+    ConsumerMortgageBorrower:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: First name of borrower
+        last_name:
+          type: string
+          description: Last name of borrower
+        phones:
+          type: array
+          description: >
+            An array of one or more US phone numbers in [E.164 format](https://support.twilio.com/hc/en-us/articles/223183008-Formatting-International-Phone-Numbers)
+          minItems: 1
+          maxItems: 10
+          items:
+            type: string
+            format: ^+1\d{10}\$
+            example: "+18185554121"
+        email:
+          type: string
+          format: email
+          example: example@leadcognition.ai
+        birthdate:
+          type: string
+          format: date
+          example: "1978-02-26"
+        credit:
+          $ref: "#/components/schemas/CreditRating"
+        fico_score:
+          type: integer
+          description: FICO score of borrower
+          minimum: 300
+          maximum: 850
+          example: 700
+        va_status:
+          type: boolean
+          description: VA status of borrower
+          example: true
+        occupation:
+          type: string
+          description: Occupation of borrower
+          enum:
+            - employed
+            - self_employed
+            - retired
+            - other
+            - unemployed
+      required:
+        - first_name
+        - last_name
+        - phones
+        - email
+        - birthdate
+        - credit
+        - va_status
+
+    ConsumerMortgageContact:
+      description: >
+        In addition to the partial contact data sent in the 'ping',
+        a complete contact sent on 'post' includes: `first_name`, `last_name`,
+        `phones`, and `email`
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: First name of applicant
+        last_name:
+          type: string
+          description: Last name of applicant
+        address:
+          type: string
+          description: Street address
+          example: 1234 Cherry Ln
+        city:
+          type: string
+          description: City of residence of the applicant
+        county:
+          type: string
+          description: County of residence of the applicant
+        state:
+          $ref: "#/components/schemas/State"
+        postal_code:
+          $ref: "#/components/schemas/ZipCode"
+        phones:
+          type: array
+          description: >
+            An array of one or more US phone numbers in [E.164 format](https://support.twilio.com/hc/en-us/articles/223183008-Formatting-International-Phone-Numbers)
+          minItems: 1
+          maxItems: 10
+          items:
+            type: string
+            format: ^+1\d{10}\$
+            example: "+18185554121"
+        email:
+          type: string
+          format: email
+          example: example@leadcognition.ai
+      required:
+        - address
+        - city
+        - county
+        - email
+        - first_name
+        - last_name
+        - phones
+        - postal_code
+        - state
+
+    ConsumerMortgageProperty:
+      type: object
+      properties:
+        loan_type:
+          type: string
+          description: Type of loan
+          enum:
+            - conventional
+            - fha
+            - va
+            - usda
+            - other
+        loan_purpose:
+          type: string
+          description: Purpose of loan
+          enum:
+            - purchase
+            - refinance
+            - cashout
+            - heloc
+            - second
+        loan_amount:
+          type: string
+          description: Loan dollar amount (in decimal format)
+          pattern: '^\d{1,}.\d{2}$'
+          example: "150000.00"
+        cashout_amount:
+          type: string
+          description: Cashout dollar amount (in decimal format)
+          pattern: '^\d{1,}.\d{2}$'
+          example: "20000.00"
+        loan_to_value:
+          type: string
+          description: Loan to value ratio (in decimal format)
+          pattern: '^\d{1,}.\d{3}$'
+          example: "0.800"
+        interest_rate:
+          type: string
+          description: Interest rate (in decimal percentage format)
+          pattern: '^\d{1,}.\d{2}$'
+          example: "4.35"
+        address:
+          type: string
+          description: Address of property
+          example: 1234 Cherry Ln
+        city:
+          type: string
+          description: City of property
+          example: Los Angeles
+        county:
+          type: string
+          description: County of property
+          example: Los Angeles County
+        state:
+          $ref: "#/components/schemas/State"
+          example: CA
+        postal_code:
+          $ref: "#/components/schemas/ZipCode"
+          example: 90001
+        property_type:
+          type: string
+          description: Type of property
+          enum:
+            - single_family
+            - multi_family
+            - condominium
+            - townhouse
+            - manufactured
+        purchase_year:
+          type: integer
+          description: Year of purchase
+          example: 2020
+      required:
+        - loan_type
+        - loan_purpose
+        - loan_amount
+        - interest_rate
+        - address
+        - city
+        - state
+        - postal_code
+
     Gender:
       description: Gender
       type: string
@@ -2134,11 +2644,12 @@ components:
           examples:
             unauthorized:
               description: The response body if the request could not be authenticated
-              value: {
-                "transaction_id": "9b0982bb-b491-4648-a5b6-c7596daab4d2",
-                "error": "unauthorized",
-                "message": "You must authenticate with the server. See documentation"
-              }
+              value:
+                {
+                  "transaction_id": "9b0982bb-b491-4648-a5b6-c7596daab4d2",
+                  "error": "unauthorized",
+                  "message": "You must authenticate with the server. See documentation",
+                }
 
     InvalidPayload:
       description: The request body was not valid per this specification
@@ -2164,17 +2675,19 @@ components:
           examples:
             invalid_payload:
               description: The response body if the request could not be authenticated
-              value: {
-                "transaction_id": "91890506-244f-45cd-8e72-b72edbebfebc",
-                "error": "invalid_payload",
-                "message": "One or more of the provided properties was invalid",
-                "violations": [
-                  {
-                    "path": "#/drivers/0/birthdate",
-                    "message": "Property is required but the provided value was null"
-                  }
-                ]
-              }
+              value:
+                {
+                  "transaction_id": "91890506-244f-45cd-8e72-b72edbebfebc",
+                  "error": "invalid_payload",
+                  "message": "One or more of the provided properties was invalid",
+                  "violations":
+                    [
+                      {
+                        "path": "#/drivers/0/birthdate",
+                        "message": "Property is required but the provided value was null",
+                      },
+                    ],
+                }
 
     ServerError:
       description: An unknown server error occurred
@@ -2185,8 +2698,9 @@ components:
           examples:
             server_error:
               description: An unknown server error occurred
-              value: {
-                "transaction_id": "266d545d-20c9-4ae4-8165-9cd9355e6db0",
-                "error": "server_error",
-                "message": "An unknown server error occurred"
-              }
+              value:
+                {
+                  "transaction_id": "266d545d-20c9-4ae4-8165-9cd9355e6db0",
+                  "error": "server_error",
+                  "message": "An unknown server error occurred",
+                }
