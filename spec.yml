@@ -1,4 +1,3 @@
-# TODO: include enum mapping CSVs
 openapi: "3.0.2"
 info:
   title: Lead Cognition PingTree Specification
@@ -371,12 +370,14 @@ paths:
             schema:
               oneOf:
                 - $ref: "#/components/schemas/AutoRelay"
+                - $ref: "#/components/schemas/ConsumerMortgageRelay"
                 - $ref: "#/components/schemas/HomeInsuranceRelay"
               discriminator:
                 propertyName: vertical
                 mapping:
                   auto: "#/components/schemas/AutoRelay"
                   auto_insurance: "#/components/schemas/AutoRelay"
+                  consumer_mortgage: "#/components/schemas/ConsumerMortgageRelay"
                   home_insurance: "#/components/schemas/HomeInsuranceRelay"
       responses:
         "200":
@@ -441,6 +442,11 @@ components:
     AutoRelay:
       allOf:
         - $ref: "#/components/schemas/AutoPost"
+        - $ref: "#/components/schemas/RelayAnnotations"
+
+    ConsumerMortgageRelay:
+      allOf:
+        - $ref: "#/components/schemas/ConsumerMortgageDirectPost"
         - $ref: "#/components/schemas/RelayAnnotations"
 
     HomeInsuranceRelay:
@@ -624,18 +630,12 @@ components:
         - bedrooms
         - built
         - city
-        - home_security
         - livable_area
         - occupancy
         - postal_code
         - property_type
-        - owned_for
-        - roof_installed
-        - roof_shape
         - roof_type
         - state
-        - stories
-        - under_construction
 
     HomeInsuranceProperty:
       description: >
@@ -794,6 +794,7 @@ components:
           minimum: 0
       required:
         - current
+        - insurer
 
     HomeInsuranceContactPartial:
       type: object
@@ -818,8 +819,6 @@ components:
       required:
         - birthdate
         - credit
-        - gender
-        - marital_status
         - postal_code
         - state
 
@@ -1124,11 +1123,6 @@ components:
               minimum: 0
             at_fault:
               type: boolean
-          required:
-            - type
-            - damage_type
-            - damage_total
-            - at_fault
 
     AutoClaim:
       allOf:
@@ -1163,11 +1157,6 @@ components:
               minimum: 0
             at_fault:
               type: boolean
-          required:
-            - type
-            - damage_type
-            - damage_total
-            - at_fault
 
     AutoTicket:
       allOf:
@@ -1225,8 +1214,6 @@ components:
                   safety-violation,
                   speeding-other,
                 ]
-          required:
-            - type
 
     AutoDUI:
       allOf:
@@ -1247,9 +1234,6 @@ components:
                 - minor-in-possession
             state:
               $ref: "#/components/schemas/State"
-          required:
-            - type
-            - state
 
     AutoResidence:
       type: object
@@ -1390,16 +1374,7 @@ components:
         - year
         - make
         - model
-        - submodel
         - vin
-        - ownership
-        - use
-        - parking
-        - annual_distance
-        - primary_driver
-        - days_driven
-        - comp
-        - coll
         - postal_code
 
     Driver:
@@ -1600,16 +1575,8 @@ components:
           example: false
       required:
         - birthdate
-        - gender
-        - credit
-        - sr22
         - age_licensed
         - marital_status
-        - education
-        - occupation
-        - suspended_license
-        - license_status
-        - relationship
 
     DriverComplete:
       allOf:
