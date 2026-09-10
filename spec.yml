@@ -176,8 +176,7 @@ paths:
               examples:
                 no_bidders:
                   description: No bidders were found
-                  value:
-                    { "transaction_id": "34a7381d-e049-49d3-8bf1-9190380a230c" }
+                  value: { "transaction_id": "34a7381d-e049-49d3-8bf1-9190380a230c" }
         "500":
           $ref: "#/components/responses/ServerError"
 
@@ -195,8 +194,9 @@ paths:
           * Additional PII fields in the `contact` and `drivers` objects that
             "complete" the lead
           * The `lead_id` from the prior 'ping'
-          * An array of `bids` array in the root object, containing a subset of
-            one or more bid(s) from the prior 'ping', in their entirety.
+          * An array of `bids` in the root object, containing a subset of one
+            or more bid(s) from the prior 'ping'. Only the `bid_id` of each is
+            required.
 
         You are permitted to utilize this endpoint once for each `lead_id`. If
         you would like to offer again a previously offered lead, it must start
@@ -280,10 +280,7 @@ paths:
                       "lead_id": "e0945148-71a1-419d-af24-41f5dffb9275",
                       "bids":
                         [
-                          {
-                            "bid_id": "c544d9ce-9054-4ad8-98b4-d9c892c08a3d",
-                            "result": "accepted",
-                          },
+                          { "bid_id": "c544d9ce-9054-4ad8-98b4-d9c892c08a3d", "result": "accepted" },
                           {
                             "bid_id": "dad2e161-f5ff-4beb-9589-75ce38d24ffd",
                             "result": "rejected",
@@ -425,6 +422,9 @@ components:
     RelayMetaData:
       type: object
       properties:
+        domain:
+          type: string
+          description: Domain of the lead provider.
         market_presence_state:
           type: string
           description: Market presence state (address.)
@@ -448,6 +448,14 @@ components:
       allOf:
         - $ref: "#/components/schemas/ConsumerMortgageDirectPost"
         - $ref: "#/components/schemas/RelayAnnotations"
+        - type: object
+          properties:
+            lead_id:
+              type: string
+              description: >
+                The ID of the lead.
+          required:
+            - lead_id
 
     HomeInsuranceRelay:
       allOf:
@@ -495,9 +503,11 @@ components:
         bids:
           type: array
           description: >
-            One or more of the bids returned in the prior 'ping', **in
-            their entirety** (i.e. including all fields present: bid_id,
-            amount, license, affiliation, conversion).
+            One or more of the bids returned in the prior 'ping', each
+            identified by its `bid_id`. The remaining bid fields (`amount`,
+            `license`, `affiliation`, `conversion`) are optional: echo the bid
+            back in its entirety if that is simpler for your integration, or
+            send `bid_id` alone.
           minItems: 1
           items:
             $ref: "#/components/schemas/Bid"
@@ -775,11 +785,15 @@ components:
         insurer:
           $ref: "#/components/schemas/HomeInsuranceCarrier"
         duration:
-          type: integer
+          # Note: a type array is used rather than `nullable: true`, as the
+          # latter is not honored by the JSON schema validator.
+          type:
+            - integer
+            - "null"
           description: >
-            Number of **months** with `insurer` (or blank if not currently
-            insured)
-          minimum: 1
+            Number of **months** with `insurer` (optional; blank if not
+            currently insured or unknown)
+          minimum: 0
         expiration:
           type: string
           description: Year and month in which the current policy expires
@@ -872,9 +886,11 @@ components:
         bids:
           type: array
           description: >
-            One or more of the bids returned in the prior 'ping', **in
-            their entirety** (i.e. including all fields present: bid_id,
-            amount, license, affiliation, conversion).
+            One or more of the bids returned in the prior 'ping', each
+            identified by its `bid_id`. The remaining bid fields (`amount`,
+            `license`, `affiliation`, `conversion`) are optional: echo the bid
+            back in its entirety if that is simpler for your integration, or
+            send `bid_id` alone.
           minItems: 1
           items:
             $ref: "#/components/schemas/Bid"
@@ -1058,11 +1074,15 @@ components:
         insurer:
           $ref: "#/components/schemas/Carrier"
         duration:
-          type: integer
+          # Note: a type array is used rather than `nullable: true`, as the
+          # latter is not honored by the JSON schema validator.
+          type:
+            - integer
+            - "null"
           description: >
-            Number of **months** with `insurer` (or blank if not currently
-            insured)
-          minimum: 1
+            Number of **months** with `insurer` (optional; blank if not
+            currently insured or unknown)
+          minimum: 0
         expiration:
           type: string
           description: Year and month in which the current policy expires
@@ -1079,8 +1099,11 @@ components:
         requested_level:
           type: string
           enum:
+            - 10/20
             - 15/25
+            - 15/30
             - 25/50
+            - 30/60
             - 50/100
             - 100/300
             - 250/500
@@ -1247,17 +1270,7 @@ components:
             - rent
         type:
           type: string
-          enum:
-            [
-              other,
-              apartment,
-              condo,
-              co-op,
-              dwelling,
-              mobile-home,
-              row-house,
-              town-home,
-            ]
+          enum: [other, apartment, condo, co-op, dwelling, mobile-home, row-house, town-home]
         duration:
           type: integer
           minimum: 0
@@ -1375,6 +1388,8 @@ components:
         - make
         - model
         - vin
+        - comp
+        - coll
         - postal_code
 
     Driver:
@@ -1772,6 +1787,11 @@ components:
 
     Bid:
       type: object
+      description: >
+        A bid returned on the 'ping'. When echoing a bid back on the 'post',
+        only `bid_id` is required — it identifies the bid on its own. The
+        remaining fields are accepted, and are still returned on the 'ping',
+        but need not be sent back.
       properties:
         bid_id:
           type: string
@@ -1798,6 +1818,8 @@ components:
           example: CA-4919120
         affiliation:
           $ref: "#/components/schemas/Carrier"
+      required:
+        - bid_id
 
     DirectPostCost:
       type: object
