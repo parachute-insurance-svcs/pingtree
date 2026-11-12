@@ -441,12 +441,24 @@ components:
 
     AutoRelay:
       allOf:
-        - $ref: "#/components/schemas/AutoPost"
+        - $ref: "#/components/schemas/AutoPostBase"
+        - type: object
+          properties:
+            lead:
+              $ref: "#/components/schemas/AutoLeadCompleteRelay"
+          required:
+            - lead
         - $ref: "#/components/schemas/RelayAnnotations"
 
     ConsumerMortgageRelay:
       allOf:
-        - $ref: "#/components/schemas/ConsumerMortgageDirectPost"
+        - $ref: "#/components/schemas/ConsumerMortgageDirectPostBase"
+        - type: object
+          properties:
+            lead:
+              $ref: "#/components/schemas/ConsumerMortgageLeadRelay"
+          required:
+            - lead
         - $ref: "#/components/schemas/RelayAnnotations"
         - type: object
           properties:
@@ -459,7 +471,13 @@ components:
 
     HomeInsuranceRelay:
       allOf:
-        - $ref: "#/components/schemas/HomeInsurancePost"
+        - $ref: "#/components/schemas/HomeInsurancePostBase"
+        - type: object
+          properties:
+            lead:
+              $ref: "#/components/schemas/HomeInsuranceLeadRelay"
+          required:
+            - lead
         - $ref: "#/components/schemas/RelayAnnotations"
 
     AutoPing:
@@ -493,7 +511,11 @@ components:
         - vertical
         - lead
 
-    HomeInsurancePost:
+    HomeInsurancePostBase:
+      description: >
+        The home insurance envelope shared by `HomeInsurancePost` and
+        `HomeInsuranceRelay`. Not referenced directly: each adds its own lead
+        schema, and `HomeInsuranceRelay` the relay annotations.
       type: object
       properties:
         lead_id:
@@ -517,13 +539,20 @@ components:
             The business vertical which the applicant is interested in.
           enum:
             - home_insurance
-        lead:
-          $ref: "#/components/schemas/HomeInsuranceLead"
       required:
         - vertical
-        - lead
         - bids
         - lead_id
+
+    HomeInsurancePost:
+      allOf:
+        - $ref: "#/components/schemas/HomeInsurancePostBase"
+        - type: object
+          properties:
+            lead:
+              $ref: "#/components/schemas/HomeInsuranceLead"
+          required:
+            - lead
 
     HomeInsuranceDirectPost:
       type: object
@@ -746,11 +775,12 @@ components:
         - contact
         - compliance
 
-    HomeInsuranceLead:
-      type: object
+    HomeInsuranceLeadBase:
       description: >
-        A home insurance lead is composed of several sub-objects containing all of
-        the data available for a lead. In the 'post' phase, all PII is included.
+        The home insurance lead properties shared by the 'post', direct post
+        and 'relay' phases. Not referenced directly: see `HomeInsuranceLead`
+        and `HomeInsuranceLeadRelay`, which differ only in their `compliance`.
+      type: object
       properties:
         seller:
           $ref: "#/components/schemas/Seller"
@@ -763,14 +793,36 @@ components:
           $ref: "#/components/schemas/HomeInsuranceCoverage"
         contact:
           $ref: "#/components/schemas/HomeInsuranceContact"
-        compliance:
-          $ref: "#/components/schemas/Compliance"
       required:
         - seller
         - properties
         - coverage
         - contact
-        - compliance
+
+    HomeInsuranceLead:
+      description: >
+        A home insurance lead is composed of several sub-objects containing all of
+        the data available for a lead. In the 'post' phase, all PII is included.
+      allOf:
+        - $ref: "#/components/schemas/HomeInsuranceLeadBase"
+        - type: object
+          properties:
+            compliance:
+              $ref: "#/components/schemas/Compliance"
+          required:
+            - compliance
+
+    HomeInsuranceLeadRelay:
+      description: >
+        The lead as relayed downstream. Identical to `HomeInsuranceLead`,
+        except that `compliance` may be omitted entirely, as may any field
+        within it.
+      allOf:
+        - $ref: "#/components/schemas/HomeInsuranceLeadBase"
+        - type: object
+          properties:
+            compliance:
+              $ref: "#/components/schemas/ComplianceRelay"
 
     HomeInsuranceCoverage:
       type: object
@@ -876,7 +928,11 @@ components:
             - phones
             - email
 
-    AutoPost:
+    AutoPostBase:
+      description: >
+        The auto envelope shared by `AutoPost` and `AutoRelay`. Not referenced
+        directly: each adds its own lead schema, and `AutoRelay` the relay
+        annotations.
       type: object
       properties:
         lead_id:
@@ -901,13 +957,20 @@ components:
           enum:
             - auto
             - auto_insurance
-        lead:
-          $ref: "#/components/schemas/AutoLeadComplete"
       required:
         - vertical
-        - lead
         - bids
         - lead_id
+
+    AutoPost:
+      allOf:
+        - $ref: "#/components/schemas/AutoPostBase"
+        - type: object
+          properties:
+            lead:
+              $ref: "#/components/schemas/AutoLeadComplete"
+          required:
+            - lead
 
     AutoDirectPost:
       type: object
@@ -981,7 +1044,16 @@ components:
         - residence
         - compliance
 
-    AutoLeadComplete:
+    AutoLeadCompleteBase:
+      description: >
+        The auto lead properties shared by the 'post', direct post and 'relay'
+        phases. Not referenced directly: see `AutoLeadComplete` and
+        `AutoLeadCompleteRelay`, which differ only in their `compliance`.
+      # Note: alone among the lead schemas this one declares no `type: object`,
+      # so a non-object `lead` is not rejected on 'post' or direct post. That
+      # predates the relay split and adding it would tighten a live endpoint,
+      # so the two schemas below likewise leave it off rather than change what
+      # the endpoints accept.
       properties:
         seller:
           $ref: "#/components/schemas/Seller"
@@ -1022,8 +1094,6 @@ components:
           $ref: "#/components/schemas/AutoResidence"
         contact:
           $ref: "#/components/schemas/AutoContactComplete"
-        compliance:
-          $ref: "#/components/schemas/Compliance"
       required:
         - seller
         - vehicles
@@ -1031,7 +1101,25 @@ components:
         - coverage
         - contact
         - residence
-        - compliance
+
+    AutoLeadComplete:
+      allOf:
+        - $ref: "#/components/schemas/AutoLeadCompleteBase"
+        - properties:
+            compliance:
+              $ref: "#/components/schemas/Compliance"
+          required:
+            - compliance
+
+    AutoLeadCompleteRelay:
+      description: >
+        The lead as relayed downstream. Identical to `AutoLeadComplete`, except
+        that `compliance` may be omitted entirely, as may any field within it.
+      allOf:
+        - $ref: "#/components/schemas/AutoLeadCompleteBase"
+        - properties:
+            compliance:
+              $ref: "#/components/schemas/ComplianceRelay"
 
     Seller:
       type: object
@@ -1387,9 +1475,6 @@ components:
         - year
         - make
         - model
-        - vin
-        - comp
-        - coll
         - postal_code
 
     Driver:
@@ -1590,8 +1675,6 @@ components:
           example: false
       required:
         - birthdate
-        - age_licensed
-        - marital_status
 
     DriverComplete:
       allOf:
@@ -1754,7 +1837,11 @@ components:
       pattern: '^\d{5}$'
       example: "91401"
 
-    Compliance:
+    ComplianceBase:
+      description: >
+        The compliance properties themselves, with none of them required. Not
+        referenced directly: see `Compliance` for the 'ping', 'post' and direct
+        post phases, and `ComplianceRelay` for 'relay'.
       type: object
       properties:
         active_prospect_certificate_id:
@@ -1777,13 +1864,31 @@ components:
           type: string
           pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: 00000000-0000-0000-0000-000000000000
-      required:
-        - active_prospect_certificate_id
-        - consent_language
-        - ip
-        - user_agent
-        - timestamp
-        - url
+
+    Compliance:
+      description: >
+        Compliance data as sent on 'ping', 'post' and direct post, where every
+        field but `LeadiD` is required.
+      allOf:
+        - $ref: "#/components/schemas/ComplianceBase"
+        - type: object
+          required:
+            - active_prospect_certificate_id
+            - consent_language
+            - ip
+            - user_agent
+            - timestamp
+            - url
+
+    ComplianceRelay:
+      description: >
+        Compliance data as sent on 'relay'. The same fields as `Compliance`, but
+        every one of them optional — and the object itself may be omitted, see
+        the `...Relay` lead schemas. A relayed lead carries whatever compliance
+        data was captured upstream, and a gap in it must not stop the lead
+        reaching downstream systems.
+      allOf:
+        - $ref: "#/components/schemas/ComplianceBase"
 
     Bid:
       type: object
@@ -2324,7 +2429,12 @@ components:
         - universal-underwriters-insurance
         - usaa
 
-    ConsumerMortgageDirectPost:
+    ConsumerMortgageDirectPostBase:
+      description: >
+        The consumer mortgage envelope shared by `ConsumerMortgageDirectPost`
+        and `ConsumerMortgageRelay`. Not referenced directly: each adds its own
+        lead schema, and `ConsumerMortgageRelay` the relay annotations and a
+        required `lead_id`.
       type: object
       properties:
         cost:
@@ -2335,18 +2445,26 @@ components:
             The business vertical which the applicant is interested in.
           enum:
             - consumer_mortgage
-        lead:
-          $ref: "#/components/schemas/ConsumerMortgageLead"
       required:
         - cost
-        - lead
         - vertical
 
-    ConsumerMortgageLead:
-      type: object
+    ConsumerMortgageDirectPost:
+      allOf:
+        - $ref: "#/components/schemas/ConsumerMortgageDirectPostBase"
+        - type: object
+          properties:
+            lead:
+              $ref: "#/components/schemas/ConsumerMortgageLead"
+          required:
+            - lead
+
+    ConsumerMortgageLeadBase:
       description: >
-        A consumer mortgage lead is composed of several sub-objects containing all of
-        the data available for a lead. In the 'post' phase, all PII is included.
+        The consumer mortgage lead properties shared by the direct post and
+        'relay' phases. Not referenced directly: see `ConsumerMortgageLead` and
+        `ConsumerMortgageLeadRelay`, which differ only in their `compliance`.
+      type: object
       properties:
         seller:
           $ref: "#/components/schemas/Seller"
@@ -2362,14 +2480,36 @@ components:
             $ref: "#/components/schemas/ConsumerMortgageBorrower"
         contact:
           $ref: "#/components/schemas/ConsumerMortgageContact"
-        compliance:
-          $ref: "#/components/schemas/Compliance"
       required:
         - seller
         - properties
         - borrowers
         - contact
-        - compliance
+
+    ConsumerMortgageLead:
+      description: >
+        A consumer mortgage lead is composed of several sub-objects containing all of
+        the data available for a lead. In the 'post' phase, all PII is included.
+      allOf:
+        - $ref: "#/components/schemas/ConsumerMortgageLeadBase"
+        - type: object
+          properties:
+            compliance:
+              $ref: "#/components/schemas/Compliance"
+          required:
+            - compliance
+
+    ConsumerMortgageLeadRelay:
+      description: >
+        The lead as relayed downstream. Identical to `ConsumerMortgageLead`,
+        except that `compliance` may be omitted entirely, as may any field
+        within it.
+      allOf:
+        - $ref: "#/components/schemas/ConsumerMortgageLeadBase"
+        - type: object
+          properties:
+            compliance:
+              $ref: "#/components/schemas/ComplianceRelay"
 
     ConsumerMortgageBorrower:
       type: object
@@ -2472,7 +2612,6 @@ components:
       required:
         - address
         - city
-        - county
         - email
         - first_name
         - last_name
