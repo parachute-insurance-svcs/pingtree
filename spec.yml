@@ -665,15 +665,8 @@ components:
             Whether the property is currently under construction or renovation.
           example: true
       required:
-        - bathrooms
-        - bedrooms
-        - built
         - city
-        - livable_area
-        - occupancy
         - postal_code
-        - property_type
-        - roof_type
         - state
 
     HomeInsuranceProperty:
@@ -771,7 +764,6 @@ components:
       required:
         - seller
         - properties
-        - coverage
         - contact
         - compliance
 
@@ -796,7 +788,6 @@ components:
       required:
         - seller
         - properties
-        - coverage
         - contact
 
     HomeInsuranceLead:
@@ -883,8 +874,6 @@ components:
         credit:
           $ref: "#/components/schemas/CreditRating"
       required:
-        - birthdate
-        - credit
         - postal_code
         - state
 
