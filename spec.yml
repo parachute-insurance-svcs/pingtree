@@ -193,13 +193,18 @@ paths:
           * All the same data included in the prior 'ping' phase
           * Additional PII fields in the `contact` and `drivers` objects that
             "complete" the lead
-          * The `lead_id` from the prior 'ping'
           * An array of `bids` in the root object, containing a subset of one
             or more bid(s) from the prior 'ping'. Only the `bid_id` of each is
-            required.
+            required. The bids identify the lead.
+          * Optionally, the `lead_id` from the prior 'ping'. When sent, it
+            must be the lead the bids were made on.
 
-        You are permitted to utilize this endpoint once for each `lead_id`. If
-        you would like to offer again a previously offered lead, it must start
+        A `bid_id` that no 'ping' returned is answered with a 404. Bids made
+        on more than one lead, or a `lead_id` that is not the bids' lead, are
+        answered with a 422 whose violation points at `#/bids` or `#/lead_id`.
+
+        You are permitted to utilize this endpoint once for each lead. If you
+        would like to offer again a previously offered lead, it must start
         again in the 'ping' phase.
       requestBody:
         required: true
@@ -219,24 +224,22 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
-          description: No lead was found with the given ID
+          description: No bid was found with one or more of the given bid IDs
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
               examples:
-                bad_lead_id:
+                bad_bid_id:
                   description: >
-                    No lead was found with the ID given by `lead_id` in the
-                    request payload.
+                    A `bid_id` in the request payload is not one returned by a
+                    prior 'ping'.
                   value:
                     {
                       "transaction_id": "7d2626fe-fe0c-45d6-981a-a22bfba9ac65",
                       "error": "not_found",
-                      "message": "No lead was found with the provided ID",
+                      "message": "No bid was found with one or more of the given bid IDs",
                     }
-          # TODO: if one or more of the bids could not be found
-          # TODO: if the bids are not consistent
           # TODO: 409 if the lead was already posted
         "422":
           $ref: "#/components/responses/InvalidPayload"
@@ -448,6 +451,7 @@ components:
               $ref: "#/components/schemas/AutoLeadCompleteRelay"
           required:
             - lead
+            - lead_id
         - $ref: "#/components/schemas/RelayAnnotations"
 
     ConsumerMortgageRelay:
@@ -478,6 +482,7 @@ components:
               $ref: "#/components/schemas/HomeInsuranceLeadRelay"
           required:
             - lead
+            - lead_id
         - $ref: "#/components/schemas/RelayAnnotations"
 
     AutoPing:
@@ -521,12 +526,15 @@ components:
         lead_id:
           type: string
           description: >
-            The `lead_id` returned in the prior 'ping' response.
+            The `lead_id` returned in the prior 'ping' response. Optional on
+            'post', where the bids identify the lead, but when sent it must be
+            the lead the bids were made on. Always present on 'relay'.
         bids:
           type: array
           description: >
             One or more of the bids returned in the prior 'ping', each
-            identified by its `bid_id`. The remaining bid fields (`amount`,
+            identified by its `bid_id`. They identify the lead, so they must all
+            have been made on the same one. The remaining bid fields (`amount`,
             `license`, `affiliation`, `conversion`) are optional: echo the bid
             back in its entirety if that is simpler for your integration, or
             send `bid_id` alone.
@@ -542,7 +550,6 @@ components:
       required:
         - vertical
         - bids
-        - lead_id
 
     HomeInsurancePost:
       allOf:
@@ -927,12 +934,15 @@ components:
         lead_id:
           type: string
           description: >
-            The `lead_id` returned in the prior 'ping' response.
+            The `lead_id` returned in the prior 'ping' response. Optional on
+            'post', where the bids identify the lead, but when sent it must be
+            the lead the bids were made on. Always present on 'relay'.
         bids:
           type: array
           description: >
             One or more of the bids returned in the prior 'ping', each
-            identified by its `bid_id`. The remaining bid fields (`amount`,
+            identified by its `bid_id`. They identify the lead, so they must all
+            have been made on the same one. The remaining bid fields (`amount`,
             `license`, `affiliation`, `conversion`) are optional: echo the bid
             back in its entirety if that is simpler for your integration, or
             send `bid_id` alone.
@@ -949,7 +959,6 @@ components:
       required:
         - vertical
         - bids
-        - lead_id
 
     AutoPost:
       allOf:
